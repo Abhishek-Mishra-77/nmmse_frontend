@@ -167,76 +167,85 @@ const Page = () => {
     const generatePDFs = async (data: any[]) => {
         setMessage('⏳ Generating PDFs...');
         const zip = new JSZip();
-
+    
         // Function to create a new PDF document
         const createPDF = async (centerCode: string, centerName: string, rows: any[]) => {
             let pdfDoc = await PDFDocument.create();
             pdfDoc.registerFontkit(fontkit);
-
-            // Load font
+    
+            // Load fonts
             const fontBytes = await fetch('/NotoSansDevanagari-Regular.ttf').then(res => res.arrayBuffer());
             const font = await pdfDoc.embedFont(fontBytes);
-
+            const boldFontBytes = await fetch('/NotoSansDevanagari-Bold.ttf').then(res => res.arrayBuffer());
+            const boldFont = await pdfDoc.embedFont(boldFontBytes);
+    
             // Load logo image
             const logoBytes = await fetch('/nmmselogo.png').then(res => res.arrayBuffer());
             const logoImage = await pdfDoc.embedPng(logoBytes);
-
+    
             // Function to create a new page
             const createPage = () => {
-                let page = pdfDoc.addPage([600, 850]); // Page size
+                let page = pdfDoc.addPage([595, 842]); // A4 size
                 page.setFont(font);
-                page.setFontSize(10);
+                page.setFontSize(11);
                 return page;
             };
-
+    
             let page = createPage();
-
+    
             // Function to draw the header
             const drawHeader = () => {
-                page.drawImage(logoImage, { x: 30, y: 780, width: 60, height: 60 });
-
-                // Title & Symbols
-
-                page.drawText('छत्तीसगढ़ माध्यमिक शिक्षा मण्डल, रायपुर द्वारा आयोजित', { x: 100, y: 800, size: 12 });
-                page.drawText('राष्ट्रीय साधन सह-प्रावीण्य छात्रवृत्ति (NMMSE) परीक्षा - 2024-25', { x: 100, y: 780, size: 12 });
-                page.drawText('मुख्य केंद्र', { x: 260, y: 760, size: 12 });
-
-                page.drawText('SIGNATURE ROLL', { x: 230, y: 740, size: 12 });
-
-                page.drawText(`CENTER CODE: ${centerCode}`, { x: 50, y: 720, size: 12 });
-                page.drawText(`DHAMTARI`, { x: 230, y: 720, size: 12 });
-                page.drawText('EXAM DATE: ......................', { x: 400, y: 720, size: 12 });
-
-                page.drawText(`CENTER NAME: ${centerName}`, { x: 50, y: 700, size: 12 });
+                const black = rgb(0, 0, 0);
+    
+                // Draw logo (aligned properly)
+                page.drawImage(logoImage, { x: 50, y: 770, width: 60, height: 60 });
+    
+                // Title
+                page.setFont(boldFont);
+                page.drawText('छत्तीसगढ़ माध्यमिक शिक्षा मण्डल, रायपुर द्वारा आयोजित', { x: 140, y: 795, size: 14, color: black });
+                page.drawText('राष्ट्रीय साधन सह-प्रावीण्य छात्रवृत्ति (NMMSE) परीक्षा - 2024-25', { x: 140, y: 775, size: 14, color: black });
+                page.drawText('मुख्य केंद्र', { x: 270, y: 755, size: 12, color: black });
+    
+                // Signature Roll Title (center aligned)
+                page.drawText('SIGNATURE ROLL', { x: 220, y: 735, size: 14, color: black });
+    
+                // Center Details
+                page.setFont(font);
+                page.drawText('CENTER CODE:', { x: 50, y: 715, size: 12, font: boldFont, color: black });
+                page.drawText(centerCode, { x: 140, y: 715, size: 12, color: black });
+    
+                page.drawText('DHAMTARI', { x: 250, y: 715, size: 12, color: black });
+    
+                page.drawText('EXAM DATE:', { x: 400, y: 715, size: 12, font: boldFont, color: black });
+                page.drawText('........................', { x: 480, y: 715, size: 12, color: black });
+    
+                // Center Name
+                page.setFont(boldFont);
+                page.drawText('CENTER NAME:', { x: 50, y: 695, size: 12, color: black });
+                page.setFont(font);
+                page.drawText(centerName, { x: 150, y: 695, size: 12, color: black });
             };
-
+    
             // Function to draw the table
             const drawTable = (yPosition: number, rows: any[]) => {
-                const columnPositions = [50, 100, 200, 400, 500]; // Adjust column positions
-                const rowHeight = 25;
-
-                // Draw header row
-                const headers = [
-                    'NO.', 'ROLL NUMBER', 'STUDENT NAME/FATHER\'S NAME',
-                    'PAPER-I (10:00 AM-11:30 AM)', 'PAPER-II (01:00 PM-02:30 PM)'
-                ];
+                const black = rgb(0, 0, 0);
+                const columnPositions = [50, 100, 220, 400, 490]; // Proper column alignment
+                const rowHeight = 28;
+    
+                // Draw header row (exactly matching image)
+                page.setFont(boldFont);
+                const headers = ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I (10:00 AM - 11:30 AM)', 'PAPER-II (01:00 PM - 02:30 PM)'];
                 headers.forEach((text, i) => {
-                    page.drawText(text, { x: columnPositions[i], y: yPosition, size: 10 });
+                    page.drawText(text, { x: columnPositions[i], y: yPosition, size: 10, color: black });
                 });
-
-                // Draw header borders
-                page.drawRectangle({
-                    x: 50,
-                    y: yPosition - 5,
-                    width: 500,
-                    height: rowHeight,
-                    borderColor: rgb(0, 0, 0),
-                    borderWidth: 1,
-                });
-
+    
+                // Draw header border
+                page.drawRectangle({ x: 50, y: yPosition - 5, width: 500, height: rowHeight, borderColor: black, borderWidth: 1 });
+    
                 yPosition -= rowHeight;
-
+    
                 // Draw student data rows
+                page.setFont(font);
                 rows.forEach((row, index) => {
                     const rowData = [
                         (index + 1).toString(),
@@ -245,50 +254,45 @@ const Page = () => {
                         'OMR SHEET No. | SIGNATURE OF CANDIDATE',
                         'OMR SHEET No. | SIGNATURE OF CANDIDATE',
                     ];
-
+    
                     rowData.forEach((text, i) => {
-                        page.drawText(text, { x: columnPositions[i], y: yPosition, size: 10 });
+                        page.drawText(text, { x: columnPositions[i], y: yPosition, size: 10, color: black });
                     });
-
-                    // Draw table row borders
-                    page.drawRectangle({
-                        x: 50,
-                        y: yPosition - 5,
-                        width: 500,
-                        height: rowHeight,
-                        borderColor: rgb(0, 0, 0),
-                        borderWidth: 1,
-                    });
-
+    
+                    // Draw row borders
+                    page.drawRectangle({ x: 50, y: yPosition - 5, width: 500, height: rowHeight, borderColor: black, borderWidth: 1 });
+    
                     yPosition -= rowHeight;
                 });
-
+    
                 return yPosition;
             };
-
+    
             // Generate PDF pages with 10 rows per page
             for (let i = 0; i < rows.length; i += 10) {
                 if (i > 0) page = createPage(); // New page for every 10 students
                 drawHeader();
-                let yPosition = 660;
+                let yPosition = 635;
                 yPosition = drawTable(yPosition, rows.slice(i, i + 10));
-
+    
                 // Add signature section
-                page.drawText('SIGNATURE', { x: 50, y: yPosition - 40, size: 10 });
-                page.drawText('SIGNATURE', { x: 230, y: yPosition - 40, size: 10 });
-                page.drawText('SIGNATURE SEAL', { x: 400, y: yPosition - 40, size: 10 });
-
-                page.drawText('ROOM SUPERVISOR', { x: 50, y: yPosition - 60, size: 10 });
-                page.drawText('EXAM INCHARGE', { x: 230, y: yPosition - 60, size: 10 });
-                page.drawText('EXAM SUPRITENDENT', { x: 400, y: yPosition - 60, size: 10 });
+                const black = rgb(0, 0, 0);
+                page.setFont(boldFont);
+                page.drawText('SIGNATURE', { x: 80, y: yPosition - 40, size: 10, color: black });
+                page.drawText('SIGNATURE', { x: 260, y: yPosition - 40, size: 10, color: black });
+                page.drawText('SIGNATURE SEAL', { x: 430, y: yPosition - 40, size: 10, color: black });
+    
+                page.drawText('ROOM SUPERVISOR', { x: 60, y: yPosition - 60, size: 10, color: black });
+                page.drawText('EXAM INCHARGE', { x: 250, y: yPosition - 60, size: 10, color: black });
+                page.drawText('EXAM SUPRITENDENT', { x: 420, y: yPosition - 60, size: 10, color: black });
             }
-
+    
             // Save PDF and add to zip
             const pdfBytes = await pdfDoc.save();
             zip.file(`${centerCode}.pdf`, pdfBytes);
         };
-
-        // Group data by CENTER CODE and generate PDFs
+    
+        // Process data and generate PDFs
         const groupedData = data.reduce((acc, row) => {
             const centerCode = row['CENTER CODE'];
             const centerName = row['CENTER NAME'];
@@ -296,24 +300,24 @@ const Page = () => {
             acc[centerCode].students.push(row);
             return acc;
         }, {} as Record<string, { name: string; students: any[] }>);
-
+    
         for (const [centerCode, { name, students }] of Object.entries(groupedData)) {
             await createPDF(centerCode, name, students);
         }
-
-        // Create ZIP file
+    
         const zipBlob = await zip.generateAsync({ type: 'blob' });
         const url = window.URL.createObjectURL(zipBlob);
-
-        // Trigger download
         const a = document.createElement('a');
         a.href = url;
         a.download = 'pdfs.zip';
         a.click();
-
+    
         setLoading(false);
         setMessage('✅ PDFs generated successfully!');
     };
+    
+
+
 
 
 
