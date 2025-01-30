@@ -74,6 +74,8 @@ const Page = () => {
             pdfDoc.registerFontkit(fontkit);
 
             const fontBytes = await fetch('/NotoSansDevanagari-Regular.ttf').then(res => res.arrayBuffer());
+            const boldFontBytes = await fetch('/NotoSansDevanagari-Bold.ttf').then(res => res.arrayBuffer());
+            const boldFont = await pdfDoc.embedFont(boldFontBytes);
             const font = await pdfDoc.embedFont(fontBytes);
 
             const topImageBytes = await fetch('/top.jpg').then(res => res.arrayBuffer());
@@ -94,7 +96,7 @@ const Page = () => {
             const createPage = () => {
                 let page = pdfDoc.addPage([pageWidth, pageHeight]);
                 page.setFont(font);
-                page.setFontSize(11);
+                page.setFontSize(9);
 
                 // **Draw Header Image (Top)**
                 page.drawImage(topImage, {
@@ -105,14 +107,16 @@ const Page = () => {
                 });
 
                 // **Header Text Details**
-                page.setFontSize(11);
-                page.drawText(`CENTER CODE  ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height - 15, font });
+                page.setFont(boldFont);
+                page.setFontSize(9);
+                page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height - 15, font });
                 page.drawText(`${location}`, { x: 400, y: pageHeight - topImage.height - 15, font });
                 page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height - 15, font });
 
                 // **Center Name**
-                page.setFontSize(11);
-                page.drawText(`CENTER NAME  ${centerName}`, {
+                page.setFontSize(9);
+                page.setFont(boldFont);
+                page.drawText(`CENTER NAME       ${centerName}`, {
                     x: marginX + 15,
                     y: pageHeight - topImage.height - 30,
                     font,
@@ -141,6 +145,7 @@ const Page = () => {
             const headers = ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I', 'PAPER-II'];
             let currentX = startX;
             page.setFontSize(10);
+            page.setFont(boldFont);
             headers.forEach((text, i) => {
                 page.drawText(text, { x: currentX + 5, y: yPosition, size: 10, font, bold: true });
                 currentX += columnWidths[i];
