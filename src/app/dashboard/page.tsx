@@ -18,10 +18,6 @@ const Page = () => {
         }
     };
 
-    const removeUnsupportedCharacters = (text: string) => {
-        return text.replace(/\u200B/g, '');
-    };
-
     const handleUpload = async () => {
         if (!file) {
             setMessage('❌ Please upload a CSV or XLSX file.');
@@ -73,78 +69,100 @@ const Page = () => {
         setMessage('⏳ Generating PDFs...');
         const zip = new JSZip();
 
-        const createPDF = async (centerCode: string, centerName: string, location: string, examDate: string, rows: any[]) => {
+        const createPDF = async (centerCode, centerName, location, examDate, rows) => {
             let pdfDoc = await PDFDocument.create();
             pdfDoc.registerFontkit(fontkit);
 
-            // Load fonts
             const fontBytes = await fetch('/NotoSansDevanagari-Regular.ttf').then(res => res.arrayBuffer());
             const font = await pdfDoc.embedFont(fontBytes);
 
-            // Load images
             const topImageBytes = await fetch('/top.jpg').then(res => res.arrayBuffer());
             const bottomImageBytes = await fetch('/bottom.jpg').then(res => res.arrayBuffer());
 
             const topImage = await pdfDoc.embedJpg(topImageBytes);
             const bottomImage = await pdfDoc.embedJpg(bottomImageBytes);
 
-            // Function to create a new page with minimal top margin for header image
             const createPage = () => {
                 let page = pdfDoc.addPage([842, 595]);
                 page.setFont(font);
-                page.setFontSize(10);
+                page.setFontSize(12);
 
-                // Draw header image at the very top with minimal spacing
+                // Draw header image
                 page.drawImage(topImage, {
                     x: 20,
-                    y: 595 - topImage.height, // Push image further up
+                    y: 595 - topImage.height,
                     width: 802,
                     height: (802 / topImage.width) * topImage.height
                 });
 
-                // Start content immediately after the header image
-                let detailsY = 595 - topImage.height - 10;
-                page.setFontSize(12);
-                page.drawText(`CENTER CODE ${centerCode}`, { x: 50, y: detailsY });
-                page.drawText(`LOCATION ${location}`, { x: 250, y: detailsY });
-                page.drawText(`EXAM DATE ${examDate || '..................'}`, { x: 600, y: detailsY });
+                // Center Code, Location, Exam Date
+                page.setFontSize(11);
+                page.drawText(`CENTER CODE ${centerCode}`, { x: 50, y: 595 - topImage.height - 20, font });
+                page.drawText(`${location}`, { x: 250, y: 595 - topImage.height - 20, font });
+                page.drawText(`EXAM DATE ${examDate || '..................'}`, { x: 600, y: 595 - topImage.height - 20, font });
 
-                page.drawText(`CENTER NAME ${centerName}`, { x: 50, y: detailsY - 20 });
+                // Center Name
+                page.setFontSize(11);
+                page.drawText(`CENTER NAME ${centerName}`, {
+                    x: 50,
+                    y: 595 - topImage.height - 40,
+                    font,
+                    color: rgb(0, 0, 0)
+                });
 
                 return page;
             };
 
             let page = createPage();
-            let yPosition = 595 - topImage.height - 50;
-            let rowHeight = 28;
+            let yPosition = 595 - topImage.height - 80;
+            let rowHeight = 30;
 
-            // Define column widths
-            const columnWidths = [40, 100, 280, 120, 120]; // Adjusted for better alignment
+            const columnWidths = [40, 100, 250, 150, 150];
             const startX = 40;
 
-            // Draw table header (correct spacing)
+            // Table Header
             const headers = ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I', 'PAPER-II'];
             let currentX = startX;
-            page.setFontSize(10);
+            page.setFontSize(11);
             headers.forEach((text, i) => {
-                page.drawText(text, { x: currentX, y: yPosition, size: 10 });
+                page.drawText(text, { x: currentX, y: yPosition, size: 11, font, bold: true });
                 currentX += columnWidths[i];
             });
 
-            yPosition -= rowHeight;
-            page.setFontSize(9);
+            // Draw header border
+            page.drawRectangle({
+                x: startX,
+                y: yPosition - 5,
+                width: columnWidths.reduce((a, b) => a + b, 0),
+                height: rowHeight,
+                borderColor: rgb(0, 0, 0),
+                borderWidth: 1
+            });
 
-            // Draw student data with pagination
+            yPosition -= rowHeight;
+            page.setFontSize(10);
+
+            // Draw student data with table borders
             rows.forEach((row, index) => {
                 if (yPosition < 100) {
                     page = createPage();
-                    yPosition = 595 - topImage.height - 50;
+                    yPosition = 595 - topImage.height - 100;
 
-                    // Re-draw table headers on new page
+                    // Redraw table headers on new page
                     currentX = startX;
                     headers.forEach((text, i) => {
-                        page.drawText(text, { x: currentX, y: yPosition, size: 10 });
+                        page.drawText(text, { x: currentX, y: yPosition, size: 11, font, bold: true });
                         currentX += columnWidths[i];
+                    });
+
+                    // Draw header border
+                    page.drawRectangle({
+                        x: startX,
+                        y: yPosition - 5,
+                        width: columnWidths.reduce((a, b) => a + b, 0),
+                        height: rowHeight,
+                        borderColor: rgb(0, 0, 0),
+                        borderWidth: 1
                     });
 
                     yPosition -= rowHeight;
@@ -160,14 +178,24 @@ const Page = () => {
 
                 currentX = startX;
                 rowData.forEach((text, i) => {
-                    page.drawText(text, { x: currentX, y: yPosition, size: 9 });
+                    page.drawText(text, { x: currentX, y: yPosition, size: 10, font });
                     currentX += columnWidths[i];
+                });
+
+                // Draw row border
+                page.drawRectangle({
+                    x: startX,
+                    y: yPosition - 5,
+                    width: columnWidths.reduce((a, b) => a + b, 0),
+                    height: rowHeight,
+                    borderColor: rgb(0, 0, 0),
+                    borderWidth: 1
                 });
 
                 yPosition -= rowHeight;
             });
 
-            // Draw footer image (on every page)
+            // Footer Image
             page.drawImage(bottomImage, {
                 x: 20,
                 y: 50,
@@ -180,11 +208,11 @@ const Page = () => {
             zip.file(`${centerCode}.pdf`, pdfBytes);
         };
 
-        // Process data and generate PDFs
+
         const groupedData = data.reduce((acc, row) => {
             const centerCode = row['CENTER CODE'];
             const centerName = row['CENTER NAME'];
-            const location = row['LOCATION'] || '';
+            const location = row['DISTRICT NAME'] || '';
             const examDate = row['EXAM DATE'] || '';
 
             if (!acc[centerCode]) acc[centerCode] = { name: centerName, location, examDate, students: [] };
@@ -206,8 +234,6 @@ const Page = () => {
         setLoading(false);
         setMessage('✅ PDFs generated successfully!');
     };
-
-
 
     return (
         <>
