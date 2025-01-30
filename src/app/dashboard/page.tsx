@@ -68,123 +68,147 @@ const Page = () => {
             setLoading(false);
         }
     };
+
     const generatePDFs = async (data: any[]) => {
         setMessage('⏳ Generating PDFs...');
         const zip = new JSZip();
-    
-        const createPDF = async (centerCode: string, centerName: string, rows: any[]) => {
+
+        const createPDF = async (centerCode: string, centerName: string, location: string, examDate: string, rows: any[]) => {
             let pdfDoc = await PDFDocument.create();
             pdfDoc.registerFontkit(fontkit);
-    
+
             // Load fonts
             const fontBytes = await fetch('/NotoSansDevanagari-Regular.ttf').then(res => res.arrayBuffer());
             const font = await pdfDoc.embedFont(fontBytes);
-    
+
             // Load images
             const topImageBytes = await fetch('/top.jpg').then(res => res.arrayBuffer());
             const bottomImageBytes = await fetch('/bottom.jpg').then(res => res.arrayBuffer());
-    
+
             const topImage = await pdfDoc.embedJpg(topImageBytes);
             const bottomImage = await pdfDoc.embedJpg(bottomImageBytes);
-    
-            // Function to create a new page
+
+            // Function to create a new page with minimal top margin for header image
             const createPage = () => {
-                let page = pdfDoc.addPage([842, 595]); // A4 landscape (width x height)
+                let page = pdfDoc.addPage([842, 595]);
                 page.setFont(font);
                 page.setFontSize(10);
+
+                // Draw header image at the very top with minimal spacing
+                page.drawImage(topImage, {
+                    x: 20,
+                    y: 595 - topImage.height, // Push image further up
+                    width: 802,
+                    height: (802 / topImage.width) * topImage.height
+                });
+
+                // Start content immediately after the header image
+                let detailsY = 595 - topImage.height - 10;
+                page.setFontSize(12);
+                page.drawText(`CENTER CODE ${centerCode}`, { x: 50, y: detailsY });
+                page.drawText(`LOCATION ${location}`, { x: 250, y: detailsY });
+                page.drawText(`EXAM DATE ${examDate || '..................'}`, { x: 600, y: detailsY });
+
+                page.drawText(`CENTER NAME ${centerName}`, { x: 50, y: detailsY - 20 });
+
                 return page;
             };
-    
+
             let page = createPage();
-    
-            // Draw header image (50px from top, 20px left/right margin)
-            page.drawImage(topImage, {
-                x: 20,
-                y: 595 - 50 - topImage.height,
-                width: 802, // 20px margin on each side
-                height: (802 / topImage.width) * topImage.height
-            });
-    
-            // Table positioning
-            let tableStartY = 400; // Adjusted based on image layout
-            let rowHeight = 25;
-            const columnWidths = [40, 80, 200, 100, 100]; // Column widths for NO., Roll No., Name, Paper-I, Paper-II
-            const startX = 40; // Starting X position
-    
-            // Draw table header
-            const headers = ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I (10:00 AM - 11:30 AM)', 'PAPER-II (01:00 PM - 02:30 PM)'];
+            let yPosition = 595 - topImage.height - 50;
+            let rowHeight = 28;
+
+            // Define column widths
+            const columnWidths = [40, 100, 280, 120, 120]; // Adjusted for better alignment
+            const startX = 40;
+
+            // Draw table header (correct spacing)
+            const headers = ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I', 'PAPER-II'];
             let currentX = startX;
             page.setFontSize(10);
-    
             headers.forEach((text, i) => {
-                page.drawText(text, { x: currentX, y: tableStartY, size: 10 });
+                page.drawText(text, { x: currentX, y: yPosition, size: 10 });
                 currentX += columnWidths[i];
             });
-    
-            // Draw student data
-            let yPosition = tableStartY - rowHeight;
+
+            yPosition -= rowHeight;
             page.setFontSize(9);
-    
+
+            // Draw student data with pagination
             rows.forEach((row, index) => {
                 if (yPosition < 100) {
                     page = createPage();
-                    yPosition = tableStartY;
+                    yPosition = 595 - topImage.height - 50;
+
+                    // Re-draw table headers on new page
+                    currentX = startX;
+                    headers.forEach((text, i) => {
+                        page.drawText(text, { x: currentX, y: yPosition, size: 10 });
+                        currentX += columnWidths[i];
+                    });
+
+                    yPosition -= rowHeight;
                 }
-    
+
                 let rowData = [
                     (index + 1).toString(),
                     row['ROLNO']?.toString() || '',
-                    row['STUDENT NAME/FATHER\'S NAME']?.toString() || '',
+                    row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
                     'OMR SHEET No. | SIGNATURE',
                     'OMR SHEET No. | SIGNATURE'
                 ];
-    
+
                 currentX = startX;
                 rowData.forEach((text, i) => {
                     page.drawText(text, { x: currentX, y: yPosition, size: 9 });
                     currentX += columnWidths[i];
                 });
-    
+
                 yPosition -= rowHeight;
             });
-    
-            // Draw footer image (50px from bottom, 20px left/right margin)
+
+            // Draw footer image (on every page)
             page.drawImage(bottomImage, {
                 x: 20,
-                y: yPosition - 50 - bottomImage.height,
+                y: 50,
                 width: 802,
                 height: (802 / bottomImage.width) * bottomImage.height
             });
-    
+
             // Save PDF and add to zip
             const pdfBytes = await pdfDoc.save();
             zip.file(`${centerCode}.pdf`, pdfBytes);
         };
-    
+
         // Process data and generate PDFs
         const groupedData = data.reduce((acc, row) => {
             const centerCode = row['CENTER CODE'];
             const centerName = row['CENTER NAME'];
-            if (!acc[centerCode]) acc[centerCode] = { name: centerName, students: [] };
+            const location = row['LOCATION'] || '';
+            const examDate = row['EXAM DATE'] || '';
+
+            if (!acc[centerCode]) acc[centerCode] = { name: centerName, location, examDate, students: [] };
             acc[centerCode].students.push(row);
             return acc;
-        }, {} as Record<string, { name: string; students: any[] }>);
-    
-        for (const [centerCode, { name, students }] of Object.entries(groupedData)) {
-            await createPDF(centerCode, name, students);
+        }, {});
+
+        for (const [centerCode, { name, location, examDate, students }] of Object.entries(groupedData)) {
+            await createPDF(centerCode, name, location, examDate, students);
         }
-    
+
         const zipBlob = await zip.generateAsync({ type: 'blob' });
         const url = window.URL.createObjectURL(zipBlob);
         const a = document.createElement('a');
         a.href = url;
         a.download = 'pdfs.zip';
         a.click();
-    
+
         setLoading(false);
         setMessage('✅ PDFs generated successfully!');
     };
-    
+
+
+
     return (
         <>
             <NavBar />
