@@ -82,17 +82,17 @@ const Page = () => {
             const topImage = await pdfDoc.embedJpg(topImageBytes);
             const bottomImage = await pdfDoc.embedJpg(bottomImageBytes);
 
-            const pageWidth = 842;   
-            const pageHeight = 595;  
-            const marginX = 10; 
-            const marginY = 5;  
+            const pageWidth = 842;
+            const pageHeight = 595;
+            const marginX = 10;
+            const marginY = 5;
 
-            const rowHeight = 26; 
-            const columnWidths = [40, 100, 300, 180, 180];  
+            const rowHeight = 26;
+            const columnWidths = [40, 100, 300, 180, 180];
             const startX = marginX + 10;
 
             const createPage = () => {
-                let page = pdfDoc.addPage([pageWidth, pageHeight]); 
+                let page = pdfDoc.addPage([pageWidth, pageHeight]);
                 page.setFont(font);
                 page.setFontSize(11);
 
