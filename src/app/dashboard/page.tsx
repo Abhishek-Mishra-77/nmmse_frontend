@@ -106,14 +106,14 @@ const Page = () => {
 
                 // **Header Text Details**
                 page.setFontSize(11);
-                page.drawText(`CENTER CODE  ${centerCode}`, { x: marginX + 10, y: pageHeight - topImage.height - 15, font });
+                page.drawText(`CENTER CODE  ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height - 15, font });
                 page.drawText(`${location}`, { x: 400, y: pageHeight - topImage.height - 15, font });
-                page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 700, y: pageHeight - topImage.height - 15, font });
+                page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height - 15, font });
 
                 // **Center Name**
                 page.setFontSize(11);
                 page.drawText(`CENTER NAME  ${centerName}`, {
-                    x: marginX + 10,
+                    x: marginX + 15,
                     y: pageHeight - topImage.height - 30,
                     font,
                     color: rgb(0, 0, 0)
