@@ -93,7 +93,7 @@ const Page = () => {
 
             const rowHeight = 28;
             const headerHeight = 40;
-            const columnWidths = [40, 100, 230, 100, 120, 100, 130];
+            const columnWidths = [40, 100, 230, 100, 120, 100, 120];
             const startX = marginX + 10;
             let currentX = startX;
             const createPage = () => {
@@ -113,7 +113,7 @@ const Page = () => {
                 page.setFont(boldFont);
                 page.setFontSize(9);
                 page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height - 15 });
-                page.drawText(`${location}`, { x: 350, y: pageHeight - topImage.height - 15 });
+                page.drawText(`${location}`, { x: 400, y: pageHeight - topImage.height - 15 });
                 page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height - 15 });
 
                 // **Center Name**
@@ -156,7 +156,7 @@ const Page = () => {
 
 
                         page.drawText(text, { x: currentX + 15, y: yPosition - 13 });
-                        
+
                         if (text === "PAPER - I (01:00 PM 02:30 PM)") {
                             // ✅ Draw only Top, Left, Bottom (Hide Right Border)
                             page.drawLine({
@@ -165,21 +165,21 @@ const Page = () => {
                                 thickness: 1,
                                 color: rgb(0, 0, 0)
                             });
-                        
+
                             page.drawLine({
                                 start: { x: currentX, y: yPosition }, // Top-left
                                 end: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
                                 thickness: 1,
                                 color: rgb(0, 0, 0)
                             });
-                        
+
                             page.drawLine({
                                 start: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
                                 thickness: 1,
                                 color: rgb(0, 0, 0)
                             });
-                        
+
                         } else {
                             // ✅ Draw only Top, Right, Bottom (Hide Left Border)
                             page.drawLine({
@@ -188,14 +188,14 @@ const Page = () => {
                                 thickness: 1,
                                 color: rgb(0, 0, 0)
                             });
-                        
+
                             page.drawLine({
                                 start: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition }, // Top-right
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
                                 thickness: 1,
                                 color: rgb(0, 0, 0)
                             });
-                        
+
                             page.drawLine({
                                 start: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
@@ -203,7 +203,7 @@ const Page = () => {
                                 color: rgb(0, 0, 0)
                             });
                         }
-                        
+
                         page.drawRectangle({
                             x: currentX,
                             y: yPosition - headerHeight,
@@ -212,7 +212,7 @@ const Page = () => {
                             borderColor: rgb(0, 0, 0),
                             borderWidth: 1
                         });
-                    } else if(text !== '') {
+                    } else if (text !== '') {
                         page.drawText(text, { x: currentX + 15, y: yPosition - 25 });
                         page.drawRectangle({
                             x: currentX,
