@@ -64,7 +64,6 @@ const Page = () => {
             setLoading(false);
         }
     };
-
     const generatePDFs = async (data) => {
         setMessage('⏳ Generating PDFs...');
         const zip = new JSZip();
@@ -89,7 +88,7 @@ const Page = () => {
             const pageWidth = 842;
             const pageHeight = 595;
             const marginX = 10;
-            const marginY = 5;
+            const marginY = 0;
 
             const rowHeight = 28;
             const headerHeight = 40;
@@ -129,7 +128,7 @@ const Page = () => {
 
                 page.drawImage(bottomImage, {
                     x: bottomImageX,
-                    y: marginY + 10,
+                    y: marginY,
                     width: bottomImageWidth,
                     height: bottomImageHeight
                 });
@@ -138,7 +137,7 @@ const Page = () => {
             };
 
             let page = createPage();
-            let yPosition = pageHeight - topImage.height - 60;
+            let yPosition = pageHeight - topImage.height - 40;
             const drawTableHeader = () => {
                 // **Table Headers (Using Multi-Row Headers)**
                 page.setFont(boldFont);
@@ -148,13 +147,9 @@ const Page = () => {
                 const subHeaders =
                     ['', '', '', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE'];
 
-
                 // **First Row of Headers**
                 headers.forEach((text, i) => {
-                    // page.drawText(text, { x: currentX + 15, y: yPosition-25 });
                     if (text === 'PAPER - I (01:00 PM 02:30 PM)' || text === 'PAPER - II (01:00 PM 02:30 PM)') {
-
-
                         page.drawText(text, { x: currentX + 15, y: yPosition - 13 });
 
                         if (text === "PAPER - I (01:00 PM 02:30 PM)") {
@@ -262,41 +257,19 @@ const Page = () => {
 
             extraRow.forEach((text, i) => {
                 page.drawText(text, { x: currentX + 5, y: yPosition });
-
-                // page.drawRectangle({
-                //     x: currentX,
-                //     y: yPosition - rowHeight,
-                //     width: columnWidths[i],
-                //     height: rowHeight,
-                //     borderColor: rgb(0, 0, 0),
-                //     borderWidth: 1
-                // });
-
                 currentX += columnWidths[i];
             });
 
             // ✅ Adjust `yPosition` after adding the extra row
             yPosition -= rowHeight - 5;
-
             rows.forEach((row, index) => {
                 if (index === 0) {
-                    if (yPosition < bottomImage.height + 40) {
-
+                    if (yPosition < bottomImage.height) {
                         page = createPage();
-
                         yPosition = pageHeight - topImage.height;
-
-                        // **Redraw Table Headers**
                         page.setFont(boldFont);
                         page.setFontSize(10);
                         currentX = startX;
-                        // drawTableHeader();
-                        // headers.forEach((text, i) => {
-                        //     page.drawText(text, { x: currentX + 5, y: yPosition });
-                        //     currentX += columnWidths[i];
-
-                        // });
-
                         yPosition -= rowHeight;
                     }
 
@@ -342,11 +315,11 @@ const Page = () => {
 
                     yPosition -= rowHeight;
                 } else {
-                    if (yPosition < bottomImage.height + 40) {
+                    if (yPosition < bottomImage.height - 20) {
 
                         page = createPage();
 
-                        yPosition = pageHeight - topImage.height - 60;
+                        yPosition = pageHeight - topImage.height - 40;
 
                         // **Redraw Table Headers**
                         page.setFont(boldFont);
