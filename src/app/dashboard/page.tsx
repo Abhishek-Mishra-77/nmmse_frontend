@@ -304,17 +304,16 @@ const Page = () => {
                         (index + 1).toString(),
                         row['ROLNO']?.toString() || '',
                         row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
-                        'OMR SHEET No.',
-                        'SIGNATURE',
-                        'OMR SHEET No.',
-                        'SIGNATURE'
+                        '',
+                        '',
+                        '',
+                        ''
                     ];
 
                     page.setFont(font);
                     page.setFontSize(9);
                     currentX = startX;
                     rowData.forEach((text, i) => {
-
                         if (i !== 0) {
                             page.drawText(text, { x: currentX + 5, y: yPosition });
                             page.drawRectangle({
@@ -367,10 +366,10 @@ const Page = () => {
                         (index + 1).toString(),
                         row['ROLNO']?.toString() || '',
                         row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
-                        'OMR SHEET No.',
-                        'SIGNATURE',
-                        'OMR SHEET No.',
-                        'SIGNATURE'
+                        '',
+                        '',
+                        '',
+                        ''
                     ];
 
                     page.setFont(font);
