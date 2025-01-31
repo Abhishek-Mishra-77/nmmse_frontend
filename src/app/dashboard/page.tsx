@@ -305,9 +305,9 @@ const Page = () => {
                                 if (currentLine) {
                                     lines.push(currentLine);
                                 }
-                                const tempY =  yPosition+15;
+                                const tempY = yPosition + 15;
                                 for (let j = 0; j < lines.length; j++) {
-                                   
+
                                     page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
                                 }
 
@@ -321,7 +321,7 @@ const Page = () => {
                                 });
 
                                 currentX += columnWidths[i];
-                            }else{
+                            } else {
                                 page.drawText(text, { x: currentX + 5, y: yPosition });
                                 page.drawRectangle({
                                     x: currentX,
@@ -343,7 +343,7 @@ const Page = () => {
                             //     borderWidth: 0.5
                             // });
                             // currentX += columnWidths[i];
-                        // } else {
+                            // } else {
                             // if (text.length > 35 && i === 2) {
                             //     let words = text.split(' ');
                             //     let lines = [];
@@ -377,16 +377,16 @@ const Page = () => {
                             //     currentX += columnWidths[i];
                             // }
                             // else {
-                                // page.drawText(text, { x: currentX + 5, y: yPosition });
-                                // page.drawRectangle({
-                                //     x: currentX,
-                                //     y: yPosition - Math.sqrt(rowHeight),
-                                //     width: columnWidths[i],
-                                //     height: rowHeight,
-                                //     borderColor: rgb(0, 0, 0),
-                                //     borderWidth: 0.5
-                                // });
-                                // currentX += columnWidths[i];
+                            // page.drawText(text, { x: currentX + 5, y: yPosition });
+                            // page.drawRectangle({
+                            //     x: currentX,
+                            //     y: yPosition - Math.sqrt(rowHeight),
+                            //     width: columnWidths[i],
+                            //     height: rowHeight,
+                            //     borderColor: rgb(0, 0, 0),
+                            //     borderWidth: 0.5
+                            // });
+                            // currentX += columnWidths[i];
                             // }
 
                         }
@@ -466,8 +466,6 @@ const Page = () => {
         setLoading(false);
         setMessage('✅ PDFs generated successfully!');
     };
-
-
 
     return (
         <>
