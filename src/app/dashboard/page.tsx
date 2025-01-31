@@ -92,7 +92,7 @@ const Page = () => {
 
             const rowHeight = 28;
             const headerHeight = 40;
-            const columnWidths = [40, 100, 230, 100, 120, 100, 120];
+            const columnWidths = [40, 100, 230, 80, 140, 80, 140];
             const startX = marginX + 10;
             let currentX = startX;
             const createPage = () => {
@@ -228,7 +228,7 @@ const Page = () => {
                 subHeaders.forEach((text, i) => {
                     if (text !== '') {
                         page.setFontSize(8);
-                        page.drawText(text, { x: currentX + 5, y: yPosition - 17 });
+                        page.drawText(text, { x: currentX + 5, y: yPosition - 12 });
 
                         page.drawRectangle({
                             x: currentX,
@@ -250,7 +250,7 @@ const Page = () => {
             page.setFont(font);
             page.setFontSize(9);
             drawTableHeader();
-            let extraRow = ['-', '-', '-', '-', '-', '-', '-'];
+            let extraRow = ['', '', '', '', '', '', ''];
             currentX = startX;
             page.setFont(font);
             page.setFontSize(9);
@@ -316,22 +316,13 @@ const Page = () => {
                     yPosition -= rowHeight;
                 } else {
                     if (yPosition < bottomImage.height - 20) {
-
                         page = createPage();
-
                         yPosition = pageHeight - topImage.height - 40;
-
                         // **Redraw Table Headers**
                         page.setFont(boldFont);
                         page.setFontSize(10);
                         currentX = startX;
                         drawTableHeader();
-                        // headers.forEach((text, i) => {
-                        //     page.drawText(text, { x: currentX + 5, y: yPosition });
-                        //     currentX += columnWidths[i];
-
-                        // });
-
                         yPosition -= rowHeight - 5;
                     }
 
@@ -363,8 +354,6 @@ const Page = () => {
 
                     yPosition -= rowHeight;
                 }
-
-
             });
 
             // **Save PDF and Add to ZIP**
