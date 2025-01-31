@@ -91,10 +91,11 @@ const Page = () => {
             const marginX = 10;
             const marginY = 5;
 
-            const rowHeight = 26;
-            const columnWidths = [40, 100, 300, 180, 180];
+            const rowHeight = 28;
+            const headerHeight = 40;
+            const columnWidths = [40, 100, 230, 100, 120, 100, 130];
             const startX = marginX + 10;
-
+            let currentX = startX;
             const createPage = () => {
                 let page = pdfDoc.addPage([pageWidth, pageHeight]);
                 page.setFont(font);
@@ -109,15 +110,13 @@ const Page = () => {
                 });
 
                 // **Header Text Details (Using Bold Font)**
-                page.setFont(boldFont); // **Explicitly Apply Bold Font**
-                page.setFontSize(9);
-                page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height - 15 });
-                page.drawText(`${location}`, { x: 400, y: pageHeight - topImage.height - 15 });
-                page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height - 15 });
-
-                // **Center Name (Bold)**
                 page.setFont(boldFont);
                 page.setFontSize(9);
+                page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height - 15 });
+                page.drawText(`${location}`, { x: 350, y: pageHeight - topImage.height - 15 });
+                page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height - 15 });
+
+                // **Center Name**
                 page.drawText(`CENTER NAME       ${centerName}`, {
                     x: marginX + 15,
                     y: pageHeight - topImage.height - 30
@@ -140,85 +139,260 @@ const Page = () => {
 
             let page = createPage();
             let yPosition = pageHeight - topImage.height - 60;
+            const drawTableHeader = () => {
+                // **Table Headers (Using Multi-Row Headers)**
+                page.setFont(boldFont);
+                page.setFontSize(10);
+                const headers =
+                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER - I (01:00 PM 02:30 PM)', '', 'PAPER - II (01:00 PM 02:30 PM)', ''];
+                const subHeaders =
+                    ['', '', '', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE'];
 
-            // **Table Headers (Use Bold Font)**
-            page.setFont(boldFont); // **Explicitly Set Bold Font**
-            page.setFontSize(10);
-            const headers = ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I', 'PAPER-II'];
-            let currentX = startX;
 
-            headers.forEach((text, i) => {
+                // **First Row of Headers**
+                headers.forEach((text, i) => {
+                    // page.drawText(text, { x: currentX + 15, y: yPosition-25 });
+                    if (text === 'PAPER - I (01:00 PM 02:30 PM)' || text === 'PAPER - II (01:00 PM 02:30 PM)') {
+
+
+                        page.drawText(text, { x: currentX + 15, y: yPosition - 13 });
+                        
+                        if (text === "PAPER - I (01:00 PM 02:30 PM)") {
+                            // ✅ Draw only Top, Left, Bottom (Hide Right Border)
+                            page.drawLine({
+                                start: { x: currentX, y: yPosition }, // Top-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition }, // Top-right
+                                thickness: 1,
+                                color: rgb(0, 0, 0)
+                            });
+                        
+                            page.drawLine({
+                                start: { x: currentX, y: yPosition }, // Top-left
+                                end: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
+                                thickness: 1,
+                                color: rgb(0, 0, 0)
+                            });
+                        
+                            page.drawLine({
+                                start: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
+                                thickness: 1,
+                                color: rgb(0, 0, 0)
+                            });
+                        
+                        } else {
+                            // ✅ Draw only Top, Right, Bottom (Hide Left Border)
+                            page.drawLine({
+                                start: { x: currentX, y: yPosition }, // Top-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition }, // Top-right
+                                thickness: 1,
+                                color: rgb(0, 0, 0)
+                            });
+                        
+                            page.drawLine({
+                                start: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition }, // Top-right
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
+                                thickness: 1,
+                                color: rgb(0, 0, 0)
+                            });
+                        
+                            page.drawLine({
+                                start: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
+                                thickness: 1,
+                                color: rgb(0, 0, 0)
+                            });
+                        }
+                        
+                        page.drawRectangle({
+                            x: currentX,
+                            y: yPosition - headerHeight,
+                            width: columnWidths[i] + columnWidths[i + 1], // Merge 2 columns
+                            height: headerHeight,
+                            borderColor: rgb(0, 0, 0),
+                            borderWidth: 1
+                        });
+                    } else if(text !== '') {
+                        page.drawText(text, { x: currentX + 15, y: yPosition - 25 });
+                        page.drawRectangle({
+                            x: currentX,
+                            y: yPosition - headerHeight,
+                            width: columnWidths[i],
+                            height: headerHeight,
+                            borderColor: rgb(0, 0, 0),
+                            borderWidth: 1
+                        });
+                    }
+                    currentX += columnWidths[i];
+                });
+
+                yPosition -= headerHeight / 2;
+
+                // **Second Row of Headers**
+                currentX = startX;
+                subHeaders.forEach((text, i) => {
+                    if (text !== '') {
+                        page.setFontSize(8);
+                        page.drawText(text, { x: currentX + 5, y: yPosition - 17 });
+
+                        page.drawRectangle({
+                            x: currentX,
+                            y: yPosition - headerHeight / 2,
+                            width: columnWidths[i],
+                            height: headerHeight / 2,
+                            borderColor: rgb(0, 0, 0),
+                            borderWidth: 1
+                        });
+                    }
+                    currentX += columnWidths[i];
+                });
+
+                yPosition -= headerHeight / 2;
+            };
+
+
+            // **Table Data**
+            page.setFont(font);
+            page.setFontSize(9);
+            drawTableHeader();
+            let extraRow = ['-', '-', '-', '-', '-', '-', '-'];
+            currentX = startX;
+            page.setFont(font);
+            page.setFontSize(9);
+
+            extraRow.forEach((text, i) => {
                 page.drawText(text, { x: currentX + 5, y: yPosition });
+
+                // page.drawRectangle({
+                //     x: currentX,
+                //     y: yPosition - rowHeight,
+                //     width: columnWidths[i],
+                //     height: rowHeight,
+                //     borderColor: rgb(0, 0, 0),
+                //     borderWidth: 1
+                // });
+
                 currentX += columnWidths[i];
             });
 
-            page.drawRectangle({
-                x: startX,
-                y: yPosition - 5,
-                width: columnWidths.reduce((a, b) => a + b, 0),
-                height: rowHeight,
-                borderColor: rgb(0, 0, 0),
-                borderWidth: 1
-            });
-
-            yPosition -= rowHeight;
-
-            // **Table Data**
-            page.setFont(font); // **Switch Back to Regular Font**
-            page.setFontSize(9);
+            // ✅ Adjust `yPosition` after adding the extra row
+            yPosition -= rowHeight - 5;
 
             rows.forEach((row, index) => {
-                if (yPosition < bottomImage.height + 40) {
-                    page = createPage();
-                    yPosition = pageHeight - topImage.height - 60;
+                if (index === 0) {
+                    if (yPosition < bottomImage.height + 40) {
 
-                    // **Redraw Table Headers**
-                    page.setFont(boldFont);
-                    page.setFontSize(10);
+                        page = createPage();
+
+                        yPosition = pageHeight - topImage.height;
+
+                        // **Redraw Table Headers**
+                        page.setFont(boldFont);
+                        page.setFontSize(10);
+                        currentX = startX;
+                        // drawTableHeader();
+                        // headers.forEach((text, i) => {
+                        //     page.drawText(text, { x: currentX + 5, y: yPosition });
+                        //     currentX += columnWidths[i];
+
+                        // });
+
+                        yPosition -= rowHeight;
+                    }
+
+                    let rowData = [
+                        (index + 1).toString(),
+                        row['ROLNO']?.toString() || '',
+                        row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
+                        'OMR SHEET No.',
+                        'SIGNATURE',
+                        'OMR SHEET No.',
+                        'SIGNATURE'
+                    ];
+
+                    page.setFont(font);
+                    page.setFontSize(9);
                     currentX = startX;
-                    headers.forEach((text, i) => {
-                        page.drawText(text, { x: currentX + 5, y: yPosition });
-                        currentX += columnWidths[i];
+                    rowData.forEach((text, i) => {
+
+                        if (i !== 0) {
+                            page.drawText(text, { x: currentX + 5, y: yPosition });
+                            page.drawRectangle({
+                                x: currentX,
+                                y: yPosition - Math.sqrt(rowHeight),
+                                width: columnWidths[i],
+                                height: rowHeight,
+                                borderColor: rgb(0, 0, 0),
+                                borderWidth: 1
+                            });
+                            currentX += columnWidths[i];
+                        } else {
+                            page.drawText(text, { x: currentX + 5, y: yPosition });
+                            page.drawRectangle({
+                                x: currentX,
+                                y: yPosition - Math.sqrt(rowHeight),
+                                width: columnWidths[i],
+                                height: rowHeight,
+                                borderColor: rgb(0, 0, 0),
+                                borderWidth: 1
+                            });
+                            currentX += columnWidths[i];
+                        }
+
                     });
 
-                    page.drawRectangle({
-                        x: startX,
-                        y: yPosition - 5,
-                        width: columnWidths.reduce((a, b) => a + b, 0),
-                        height: rowHeight,
-                        borderColor: rgb(0, 0, 0),
-                        borderWidth: 1
+                    yPosition -= rowHeight;
+                } else {
+                    if (yPosition < bottomImage.height + 40) {
+
+                        page = createPage();
+
+                        yPosition = pageHeight - topImage.height - 60;
+
+                        // **Redraw Table Headers**
+                        page.setFont(boldFont);
+                        page.setFontSize(10);
+                        currentX = startX;
+                        drawTableHeader();
+                        // headers.forEach((text, i) => {
+                        //     page.drawText(text, { x: currentX + 5, y: yPosition });
+                        //     currentX += columnWidths[i];
+
+                        // });
+
+                        yPosition -= rowHeight - 5;
+                    }
+
+                    let rowData = [
+                        (index + 1).toString(),
+                        row['ROLNO']?.toString() || '',
+                        row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
+                        'OMR SHEET No.',
+                        'SIGNATURE',
+                        'OMR SHEET No.',
+                        'SIGNATURE'
+                    ];
+
+                    page.setFont(font);
+                    page.setFontSize(9);
+                    currentX = startX;
+                    rowData.forEach((text, i) => {
+                        page.drawText(text, { x: currentX + 5, y: yPosition });
+                        page.drawRectangle({
+                            x: currentX,
+                            y: yPosition - Math.sqrt(rowHeight),
+                            width: columnWidths[i],
+                            height: rowHeight,
+                            borderColor: rgb(0, 0, 0),
+                            borderWidth: 1
+                        });
+                        currentX += columnWidths[i];
                     });
 
                     yPosition -= rowHeight;
                 }
 
-                let rowData = [
-                    (index + 1).toString(),
-                    row['ROLNO']?.toString() || '',
-                    row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
-                    'OMR SHEET No. | SIGNATURE',
-                    'OMR SHEET No. | SIGNATURE'
-                ];
 
-                page.setFont(font); // **Ensure Table Data is in Regular Font**
-                page.setFontSize(9);
-                currentX = startX;
-                rowData.forEach((text, i) => {
-                    page.drawText(text, { x: currentX + 5, y: yPosition });
-                    currentX += columnWidths[i];
-                });
-
-                page.drawRectangle({
-                    x: startX,
-                    y: yPosition - 5,
-                    width: columnWidths.reduce((a, b) => a + b, 0),
-                    height: rowHeight,
-                    borderColor: rgb(0, 0, 0),
-                    borderWidth: 1
-                });
-
-                yPosition -= rowHeight;
             });
 
             // **Save PDF and Add to ZIP**
@@ -251,6 +425,7 @@ const Page = () => {
         setLoading(false);
         setMessage('✅ PDFs generated successfully!');
     };
+
 
 
     return (
