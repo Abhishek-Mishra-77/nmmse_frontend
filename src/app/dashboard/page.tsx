@@ -79,8 +79,8 @@ const Page = () => {
             const font = await pdfDoc.embedFont(fontBytes);
             const boldFont = await pdfDoc.embedFont(boldFontBytes);
 
-            const topImageBytes = await fetch('/top.jpg').then(res => res.arrayBuffer());
-            const bottomImageBytes = await fetch('/bottom.jpg').then(res => res.arrayBuffer());
+            const topImageBytes = await fetch('/12.jpg').then(res => res.arrayBuffer());
+            const bottomImageBytes = await fetch('/bottom1.jpg').then(res => res.arrayBuffer());
 
             const topImage = await pdfDoc.embedJpg(topImageBytes);
             const bottomImage = await pdfDoc.embedJpg(bottomImageBytes);
@@ -103,7 +103,7 @@ const Page = () => {
                 // **Draw Header Image (Top)**
                 page.drawImage(topImage, {
                     x: marginX,
-                    y: pageHeight - marginY - topImage.height,
+                    y: pageHeight - marginY - topImage.height+100,
                     width: 822 - (marginX * 2),
                     height: (822 / topImage.width) * topImage.height
                 });
@@ -111,14 +111,14 @@ const Page = () => {
                 // **Header Text Details (Using Bold Font)**
                 page.setFont(boldFont);
                 page.setFontSize(9);
-                page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height - 15 });
-                page.drawText(`${location}`, { x: 400, y: pageHeight - topImage.height - 15 });
-                page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height - 15 });
+                page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height+80 });
+                page.drawText(`${location}`, { x: 400, y: pageHeight - topImage.height+80});
+                page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height+80  });
 
                 // **Center Name**
                 page.drawText(`CENTER NAME       ${centerName}`, {
                     x: marginX + 15,
-                    y: pageHeight - topImage.height - 30
+                    y: pageHeight - topImage.height + 60
                 });
 
                 // **Footer Image (Bottom)**
@@ -137,7 +137,7 @@ const Page = () => {
             };
 
             let page = createPage();
-            let yPosition = pageHeight - topImage.height - 40;
+            let yPosition = pageHeight - topImage.height+40 ;
             const drawTableHeader = () => {
                 // **Table Headers (Using Multi-Row Headers)**
                 page.setFont(boldFont);
@@ -264,7 +264,7 @@ const Page = () => {
             yPosition -= rowHeight - 5;
             rows.forEach((row, index) => {
                 if (index === 0) {
-                    if (yPosition < bottomImage.height) {
+                    if (yPosition < bottomImage.height-150) {
                         page = createPage();
                         yPosition = pageHeight - topImage.height;
                         page.setFont(boldFont);
@@ -315,9 +315,9 @@ const Page = () => {
 
                     yPosition -= rowHeight;
                 } else {
-                    if (yPosition < bottomImage.height - 20) {
+                    if (yPosition < bottomImage.height -60) {
                         page = createPage();
-                        yPosition = pageHeight - topImage.height - 40;
+                        yPosition = pageHeight - topImage.height + 40;
                         // **Redraw Table Headers**
                         page.setFont(boldFont);
                         page.setFontSize(10);
