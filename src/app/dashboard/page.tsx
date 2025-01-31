@@ -287,35 +287,115 @@ const Page = () => {
                     page.setFontSize(9);
                     currentX = startX;
                     rowData.forEach((text, i) => {
-                        if (i !== 0) {
-                            page.drawText(text, { x: currentX + 5, y: yPosition });
-                            page.drawRectangle({
-                                x: currentX,
-                                y: yPosition - Math.sqrt(rowHeight),
-                                width: columnWidths[i],
-                                height: rowHeight,
-                                borderColor: rgb(0, 0, 0),
-                                borderWidth: 0.5
-                            });
-                            currentX += columnWidths[i];
-                        } else {
-                            page.drawText(text, { x: currentX + 5, y: yPosition });
-                            page.drawRectangle({
-                                x: currentX,
-                                y: yPosition - Math.sqrt(rowHeight),
-                                width: columnWidths[i],
-                                height: rowHeight,
-                                borderColor: rgb(0, 0, 0),
-                                borderWidth: 0.5
-                            });
-                            currentX += columnWidths[i];
+                        if (true) {
+
+                            if (text.length > 35 && i === 2) {
+                                let words = text.split(' ');
+                                let lines = [];
+                                let currentLine = '';
+
+                                for (let word of words) {
+                                    if ((currentLine + ' ' + word).trim().length <= 35) {
+                                        currentLine += (currentLine ? ' ' : '') + word;
+                                    } else {
+                                        lines.push(currentLine);
+                                        currentLine = word;
+                                    }
+                                }
+                                if (currentLine) {
+                                    lines.push(currentLine);
+                                }
+                                const tempY =  yPosition+15;
+                                for (let j = 0; j < lines.length; j++) {
+                                   
+                                    page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
+                                }
+
+                                page.drawRectangle({
+                                    x: currentX,
+                                    y: yPosition - Math.sqrt(rowHeight),
+                                    width: columnWidths[i],
+                                    height: rowHeight,
+                                    borderColor: rgb(0, 0, 0),
+                                    borderWidth: 0.5
+                                });
+
+                                currentX += columnWidths[i];
+                            }else{
+                                page.drawText(text, { x: currentX + 5, y: yPosition });
+                                page.drawRectangle({
+                                    x: currentX,
+                                    y: yPosition - Math.sqrt(rowHeight),
+                                    width: columnWidths[i],
+                                    height: rowHeight,
+                                    borderColor: rgb(0, 0, 0),
+                                    borderWidth: 0.5
+                                });
+                                currentX += columnWidths[i];
+                            }
+                            // page.drawText(text, { x: currentX + 5, y: yPosition });
+                            // page.drawRectangle({
+                            //     x: currentX,
+                            //     y: yPosition - Math.sqrt(rowHeight),
+                            //     width: columnWidths[i],
+                            //     height: rowHeight,
+                            //     borderColor: rgb(0, 0, 0),
+                            //     borderWidth: 0.5
+                            // });
+                            // currentX += columnWidths[i];
+                        // } else {
+                            // if (text.length > 35 && i === 2) {
+                            //     let words = text.split(' ');
+                            //     let lines = [];
+                            //     let currentLine = '';
+
+                            //     for (let word of words) {
+                            //         if ((currentLine + ' ' + word).trim().length <= 35) {
+                            //             currentLine += (currentLine ? ' ' : '') + word;
+                            //         } else {
+                            //             lines.push(currentLine);
+                            //             currentLine = word;
+                            //         }
+                            //     }
+                            //     if (currentLine) {
+                            //         lines.push(currentLine);
+                            //     }
+
+                            //     for (let j = 0; j < lines.length; j++) {
+                            //         page.drawText(lines[j], { x: currentX + 5, y: yPosition - (j * 12) });
+                            //     }
+
+                            //     page.drawRectangle({
+                            //         x: currentX,
+                            //         y: yPosition - Math.sqrt(rowHeight),
+                            //         width: columnWidths[i],
+                            //         height: rowHeight,
+                            //         borderColor: rgb(0, 0, 0),
+                            //         borderWidth: 0.5
+                            //     });
+
+                            //     currentX += columnWidths[i];
+                            // }
+                            // else {
+                                // page.drawText(text, { x: currentX + 5, y: yPosition });
+                                // page.drawRectangle({
+                                //     x: currentX,
+                                //     y: yPosition - Math.sqrt(rowHeight),
+                                //     width: columnWidths[i],
+                                //     height: rowHeight,
+                                //     borderColor: rgb(0, 0, 0),
+                                //     borderWidth: 0.5
+                                // });
+                                // currentX += columnWidths[i];
+                            // }
+
                         }
 
                     });
 
                     yPosition -= rowHeight;
                 } else {
-                    if (yPosition < bottomImage.height - 60) {
+                    if (yPosition < bottomImage.height - 50) {
                         page = createPage();
                         yPosition = pageHeight - topImage.height + 40;
                         // **Redraw Table Headers**
