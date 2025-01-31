@@ -92,7 +92,7 @@ const Page = () => {
 
             const rowHeight = 28;
             const headerHeight = 40;
-            const columnWidths = [40, 100, 230, 80, 140, 80, 140];
+            const columnWidths = [40, 100, 230, 80, 130, 80, 130];
             const startX = marginX + 10;
             let currentX = startX;
             const createPage = () => {
@@ -157,21 +157,21 @@ const Page = () => {
                             page.drawLine({
                                 start: { x: currentX, y: yPosition }, // Top-left
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition }, // Top-right
-                                thickness: 1,
+                                thickness: 0.5,
                                 color: rgb(0, 0, 0)
                             });
 
                             page.drawLine({
                                 start: { x: currentX, y: yPosition }, // Top-left
                                 end: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
-                                thickness: 1,
+                                thickness: 0.5,
                                 color: rgb(0, 0, 0)
                             });
 
                             page.drawLine({
                                 start: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
-                                thickness: 1,
+                                thickness: 0.5,
                                 color: rgb(0, 0, 0)
                             });
 
@@ -180,21 +180,21 @@ const Page = () => {
                             page.drawLine({
                                 start: { x: currentX, y: yPosition }, // Top-left
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition }, // Top-right
-                                thickness: 1,
+                                thickness: 0.5,
                                 color: rgb(0, 0, 0)
                             });
 
                             page.drawLine({
                                 start: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition }, // Top-right
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
-                                thickness: 1,
+                                thickness: 0.5,
                                 color: rgb(0, 0, 0)
                             });
 
                             page.drawLine({
                                 start: { x: currentX, y: yPosition - headerHeight }, // Bottom-left
                                 end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition - headerHeight }, // Bottom-right
-                                thickness: 1,
+                                thickness: 0.5,
                                 color: rgb(0, 0, 0)
                             });
                         }
@@ -205,7 +205,7 @@ const Page = () => {
                             width: columnWidths[i] + columnWidths[i + 1], // Merge 2 columns
                             height: headerHeight,
                             borderColor: rgb(0, 0, 0),
-                            borderWidth: 1
+                            borderWidth: 0.5
                         });
                     } else if (text !== '') {
                         page.drawText(text, { x: currentX + 15, y: yPosition - 25 });
@@ -215,7 +215,7 @@ const Page = () => {
                             width: columnWidths[i],
                             height: headerHeight,
                             borderColor: rgb(0, 0, 0),
-                            borderWidth: 1
+                            borderWidth: 0.5
                         });
                     }
                     currentX += columnWidths[i];
@@ -236,7 +236,7 @@ const Page = () => {
                             width: columnWidths[i],
                             height: headerHeight / 2,
                             borderColor: rgb(0, 0, 0),
-                            borderWidth: 1
+                            borderWidth: 0.5
                         });
                     }
                     currentX += columnWidths[i];
@@ -295,7 +295,7 @@ const Page = () => {
                                 width: columnWidths[i],
                                 height: rowHeight,
                                 borderColor: rgb(0, 0, 0),
-                                borderWidth: 1
+                                borderWidth: 0.5
                             });
                             currentX += columnWidths[i];
                         } else {
@@ -306,7 +306,7 @@ const Page = () => {
                                 width: columnWidths[i],
                                 height: rowHeight,
                                 borderColor: rgb(0, 0, 0),
-                                borderWidth: 1
+                                borderWidth: 0.5
                             });
                             currentX += columnWidths[i];
                         }
@@ -347,7 +347,7 @@ const Page = () => {
                             width: columnWidths[i],
                             height: rowHeight,
                             borderColor: rgb(0, 0, 0),
-                            borderWidth: 1
+                            borderWidth: 0.5
                         });
                         currentX += columnWidths[i];
                     });
