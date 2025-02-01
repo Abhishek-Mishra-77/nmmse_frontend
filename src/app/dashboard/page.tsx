@@ -460,6 +460,13 @@ const Page = () => {
             return acc;
         }, {});
 
+
+        // Add 10 empty data objects for each group
+        Object.keys(groupedData).forEach(centerCode => {
+            for (let i = 0; i < 10; i++) {
+                groupedData[centerCode].students.push({ isEmpty: true }); // Empty object with a flag
+            }
+        });
         for (const [centerCode, { name, location, examDate, students }] of Object.entries(groupedData)) {
             await createPDF(centerCode, name, location, examDate, students);
         }
