@@ -81,8 +81,8 @@ const Page = () => {
 
             const topImageBytes = await fetch('/topbg.jpg').then(res => res.arrayBuffer());
             const bottomImageBytes = await fetch('/bottom1.jpg').then(res => res.arrayBuffer());
-            const mukhyaKenraImage = await fetch('/mmm.jpg').then(res => res.arrayBuffer());
-            const uppkendraImage = await fetch('/uu.jpg').then(res => res.arrayBuffer());
+            const mukhyaKenraImage = await fetch('/mainImage.jpg').then(res => res.arrayBuffer());
+            const uppkendraImage = await fetch('/upkendrasecond.jpg').then(res => res.arrayBuffer());
             const fallbackBytes = await fetch('/fallback.jpg').then(res => res.arrayBuffer());
 
 
@@ -135,13 +135,13 @@ const Page = () => {
                         : uppImage
                     : fallbackImage;
 
-
+ 
                 // **Draw Bold & Large Text**
                 page.drawImage(selectedImage, {
-                    x: textX - 70,
+                    x: textX - 60,
                     y: pageHeight - marginY - topImageHeight + 10, // Align vertically with the top image
-                    width: remainingWidth + 5, // Ensure text stays within the remaining space
-                    height: remainingWidth + 5
+                    width: remainingWidth + 25, // Ensure text stays within the remaining space
+                    height: remainingWidth-10 
                 });
 
                 // **Header Text Details (Using Bold Font)**
