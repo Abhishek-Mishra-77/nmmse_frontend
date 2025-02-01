@@ -50,7 +50,7 @@ const Page = () => {
                         return;
                     }
 
-                    data.sort((a, b) => a['CENTER CODE'] - b['CENTER CODE']);
+                    data.sort((a, b) => a['center'] - b['center']);
                     await generatePDFs(data);
                 } catch (error) {
                     setMessage(`❌ Error processing file: ${error.message}`);
@@ -277,8 +277,8 @@ const Page = () => {
 
                     let rowData = [
                         (index + 1).toString(),
-                        row['ROLNO']?.toString() || '',
-                        row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
+                        row['rollno']?.toString() || '',
+                        row["student"]?.toString() || '',
                         '',
                         '',
                         '',
@@ -307,7 +307,7 @@ const Page = () => {
                                 if (currentLine) {
                                     lines.push(currentLine);
                                 }
-                                const tempY = yPosition + 22 ;
+                                const tempY = yPosition + 22;
                                 for (let j = 0; j < lines.length; j++) {
 
                                     page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
@@ -317,7 +317,7 @@ const Page = () => {
                                     x: currentX,
                                     y: yPosition - Math.sqrt(rowHeight),
                                     width: columnWidths[i],
-                                    height: rowHeight ,
+                                    height: rowHeight,
                                     borderColor: rgb(0, 0, 0),
                                     borderWidth: 0.5
                                 });
@@ -327,7 +327,7 @@ const Page = () => {
                                 page.drawText(text, { x: currentX + 5, y: yPosition });
                                 page.drawRectangle({
                                     x: currentX,
-                                    y: yPosition - Math.sqrt(rowHeight) ,
+                                    y: yPosition - Math.sqrt(rowHeight),
                                     width: columnWidths[i],
                                     height: rowHeight,
                                     borderColor: rgb(0, 0, 0),
@@ -410,8 +410,8 @@ const Page = () => {
 
                     let rowData = [
                         (index + 1).toString(),
-                        row['ROLNO']?.toString() || '',
-                        row["STUDENT NAME/FATHER'S NAME"]?.toString() || '',
+                        row['rollno']?.toString() || '',
+                        row["student"]?.toString() || '',
                         '',
                         '',
                         '',
@@ -439,19 +439,20 @@ const Page = () => {
             });
 
             // **Save PDF and Add to ZIP**
-            
-           
-            
-            
-            
+
+
+            // dstnm	center	TYPE	cennm	rollno	student
+
+
+
             const pdfBytes = await pdfDoc.save();
             zip.file(`${centerCode}.pdf`, pdfBytes);
         };
 
         const groupedData = data.reduce((acc, row) => {
-            const centerCode = row['CENTER CODE'];
-            const centerName = row['CENTER NAME'];
-            const location = row['DISTRICT NAME'] || '';
+            const centerCode = row['center'];
+            const centerName = row['cennm'];
+            const location = row['dstnm'] || '';
             const examDate = row['EXAM DATE'] || '';
 
             if (!acc[centerCode]) acc[centerCode] = { name: centerName, location, examDate, students: [] };
