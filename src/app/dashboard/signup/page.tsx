@@ -82,9 +82,16 @@ const Page = () => {
 
             const topImageBytes = await fetch('/topbg.jpg').then(res => res.arrayBuffer());
             const bottomImageBytes = await fetch('/bottom1.jpg').then(res => res.arrayBuffer());
+            const mukhyaKenraImage = await fetch('/mmm.jpg').then(res => res.arrayBuffer());
+            const uppkendraImage = await fetch('/uu.jpg').then(res => res.arrayBuffer());
+
+
 
             const topImage = await pdfDoc.embedJpg(topImageBytes);
             const bottomImage = await pdfDoc.embedJpg(bottomImageBytes);
+
+            const mainImage = await pdfDoc.embedJpg(mukhyaKenraImage);
+            const uppImage = await pdfDoc.embedJpg(uppkendraImage);
 
             const pageWidth = 842;  // A4 height becomes width
             const pageHeight = 695;
@@ -102,17 +109,6 @@ const Page = () => {
                 page.setFont(font);
                 page.setFontSize(9);
 
-
-                // const topImageWidth = 822 - (marginX * 2); // Calculate image width
-                // const topImageHeight = (topImageWidth / topImage.width) * topImage.height; 
-
-                // **Draw Header Image (Top)**
-                // page.drawImage(topImage, {
-                //     x: marginX,
-                //     y: pageHeight - marginY - topImage.height + 100,
-                //     width: 822 - (marginX * 2),
-                //     height: (822 / topImage.width) * topImage.height
-                // });
                 const topImageWidth = 785 - (marginX * 2);
                 const topImageHeight = (822 / topImage.width) * topImage.height;
                 page.drawImage(topImage, {
@@ -131,23 +127,25 @@ const Page = () => {
                 page.setFont(boldFont); // Ensure you have a bold font loaded
                 page.setFontSize(16); // Increase font size
 
+                // मुख्य केंद्र    उप केंद्र
+                const selectedImage = type === 'मुख्य केंद्र' ? mainImage : uppImage;
                 // **Draw Bold & Large Text**
-                page.drawText(`${type}`, {
+                page.drawImage(selectedImage, {
                     x: textX - 60,
                     y: pageHeight - marginY - topImageHeight + 10, // Align vertically with the top image
-                    maxWidth: remainingWidth + 60, // Ensure text stays within the remaining space
-                    align: 'center' // Center-align text
+                    width: remainingWidth + 10, // Ensure text stays within the remaining space
+                    height: remainingWidth + 10
                 });
 
-                // **Underline Text**
-                const textWidth = type.length * 7; // Approximate width per character
-                const underlineY = pageHeight - marginY - topImageHeight + 58; // Slightly below text
+                // // **Underline Text**
+                // const textWidth = type.length * 7; // Approximate width per character
+                // const underlineY = pageHeight - marginY - topImageHeight + 58; // Slightly below text
 
-                page.drawLine({
-                    start: { x: textX - 60, y: underlineY - 50 },
-                    end: { x: textX - 60 + textWidth, y: underlineY - 50 },
-                    thickness: 1
-                });
+                // page.drawLine({
+                //     start: { x: textX - 60, y: underlineY - 50 },
+                //     end: { x: textX - 60 + textWidth, y: underlineY - 50 },
+                //     thickness: 1
+                // });
 
                 // **Header Text Details (Using Bold Font)**
                 page.setFont(boldFont);
