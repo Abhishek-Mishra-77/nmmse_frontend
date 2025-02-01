@@ -87,7 +87,7 @@ const Page = () => {
             const bottomImage = await pdfDoc.embedJpg(bottomImageBytes);
 
             const pageWidth = 842;  // A4 height becomes width
-            const pageHeight = 595;
+            const pageHeight = 695;
             const marginX = 10;
             const marginY = 0;
 
