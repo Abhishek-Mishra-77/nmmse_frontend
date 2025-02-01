@@ -64,6 +64,7 @@ const Page = () => {
             setLoading(false);
         }
     };
+
     const generatePDFs = async (data) => {
         setMessage('⏳ Generating PDFs...');
         const zip = new JSZip();
@@ -90,11 +91,12 @@ const Page = () => {
             const marginX = 10;
             const marginY = 0;
 
-            const rowHeight = 28;
+            const rowHeight = 37;
             const headerHeight = 40;
-            const columnWidths = [40, 100, 230, 80, 130, 80, 130];
+            const columnWidths = [35, 90, 260, 80, 130, 80, 130];
             const startX = marginX + 10;
             let currentX = startX;
+
             const createPage = () => {
                 let page = pdfDoc.addPage([pageWidth, pageHeight]);
                 page.setFont(font);
@@ -289,7 +291,7 @@ const Page = () => {
                     rowData.forEach((text, i) => {
                         if (true) {
 
-                            if (text.length > 35 && i === 2) {
+                            if (text.length > 31 && i === 2) {
                                 let words = text.split(' ');
                                 let lines = [];
                                 let currentLine = '';
@@ -305,7 +307,7 @@ const Page = () => {
                                 if (currentLine) {
                                     lines.push(currentLine);
                                 }
-                                const tempY = yPosition + 15;
+                                const tempY = yPosition + 22 ;
                                 for (let j = 0; j < lines.length; j++) {
 
                                     page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
@@ -315,7 +317,7 @@ const Page = () => {
                                     x: currentX,
                                     y: yPosition - Math.sqrt(rowHeight),
                                     width: columnWidths[i],
-                                    height: rowHeight,
+                                    height: rowHeight ,
                                     borderColor: rgb(0, 0, 0),
                                     borderWidth: 0.5
                                 });
@@ -325,7 +327,7 @@ const Page = () => {
                                 page.drawText(text, { x: currentX + 5, y: yPosition });
                                 page.drawRectangle({
                                     x: currentX,
-                                    y: yPosition - Math.sqrt(rowHeight),
+                                    y: yPosition - Math.sqrt(rowHeight) ,
                                     width: columnWidths[i],
                                     height: rowHeight,
                                     borderColor: rgb(0, 0, 0),
@@ -437,6 +439,11 @@ const Page = () => {
             });
 
             // **Save PDF and Add to ZIP**
+            
+           
+            
+            
+            
             const pdfBytes = await pdfDoc.save();
             zip.file(`${centerCode}.pdf`, pdfBytes);
         };
@@ -481,5 +488,4 @@ const Page = () => {
         </>
     );
 };
-
 export default Page;
