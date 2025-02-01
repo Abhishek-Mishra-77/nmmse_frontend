@@ -84,7 +84,7 @@ const Page = () => {
             const bottomImageBytes = await fetch('/bottom1.jpg').then(res => res.arrayBuffer());
             const mukhyaKenraImage = await fetch('/mmm.jpg').then(res => res.arrayBuffer());
             const uppkendraImage = await fetch('/uu.jpg').then(res => res.arrayBuffer());
-
+            const fallbackBytes = await fetch('/fallback.jpg').then(res => res.arrayBuffer());
 
 
             const topImage = await pdfDoc.embedJpg(topImageBytes);
@@ -92,6 +92,9 @@ const Page = () => {
 
             const mainImage = await pdfDoc.embedJpg(mukhyaKenraImage);
             const uppImage = await pdfDoc.embedJpg(uppkendraImage);
+
+            const fallbackImage = await pdfDoc.embedJpg(fallbackBytes);
+
 
             const pageWidth = 842;  // A4 height becomes width
             const pageHeight = 695;
@@ -119,16 +122,21 @@ const Page = () => {
                 });
 
                 // **Calculate Remaining Width**
-                const remainingWidth = pageWidth - (marginX + topImageWidth + 20); // Remaining space after the image
-                const textX = marginX + topImageWidth + (remainingWidth / 2); // Center text in the remaining space
+                const remainingWidth = pageWidth - (marginX + topImageWidth + 20);
+                const textX = marginX + topImageWidth + (remainingWidth / 2);
 
-                // **Draw Text in Remaining Space**
                 // **Set Bold Font & Large Font Size**
                 page.setFont(boldFont); // Ensure you have a bold font loaded
                 page.setFontSize(16); // Increase font size
 
                 // मुख्य केंद्र    उप केंद्र
-                const selectedImage = type === 'मुख्य केंद्र' ? mainImage : uppImage;
+                const selectedImage = type
+                    ? type === 'मुख्य केंद्र'
+                        ? mainImage
+                        : uppImage
+                    : fallbackImage;
+
+
                 // **Draw Bold & Large Text**
                 page.drawImage(selectedImage, {
                     x: textX - 60,
@@ -136,16 +144,6 @@ const Page = () => {
                     width: remainingWidth + 10, // Ensure text stays within the remaining space
                     height: remainingWidth + 10
                 });
-
-                // // **Underline Text**
-                // const textWidth = type.length * 7; // Approximate width per character
-                // const underlineY = pageHeight - marginY - topImageHeight + 58; // Slightly below text
-
-                // page.drawLine({
-                //     start: { x: textX - 60, y: underlineY - 50 },
-                //     end: { x: textX - 60 + textWidth, y: underlineY - 50 },
-                //     thickness: 1
-                // });
 
                 // **Header Text Details (Using Bold Font)**
                 page.setFont(boldFont);
