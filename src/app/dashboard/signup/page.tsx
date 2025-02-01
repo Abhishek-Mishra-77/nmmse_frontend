@@ -138,10 +138,10 @@ const Page = () => {
 
                 // **Draw Bold & Large Text**
                 page.drawImage(selectedImage, {
-                    x: textX - 60,
+                    x: textX - 70,
                     y: pageHeight - marginY - topImageHeight + 10, // Align vertically with the top image
-                    width: remainingWidth + 10, // Ensure text stays within the remaining space
-                    height: remainingWidth + 10
+                    width: remainingWidth + 5, // Ensure text stays within the remaining space
+                    height: remainingWidth + 5
                 });
 
                 // **Header Text Details (Using Bold Font)**
