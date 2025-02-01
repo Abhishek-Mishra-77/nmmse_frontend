@@ -73,6 +73,8 @@ const Page = () => {
             let pdfDoc = await PDFDocument.create();
             pdfDoc.registerFontkit(fontkit);
 
+
+
             // **Load Regular and Bold Fonts**
             const fontBytes = await fetch('/NotoSansDevanagari-Regular.ttf').then(res => res.arrayBuffer());
             const boldFontBytes = await fetch('/NotoSansDevanagari-Bold.ttf').then(res => res.arrayBuffer());
@@ -102,17 +104,6 @@ const Page = () => {
                 page.setFont(font);
                 page.setFontSize(9);
 
-
-                // const topImageWidth = 822 - (marginX * 2); // Calculate image width
-                // const topImageHeight = (topImageWidth / topImage.width) * topImage.height; 
-
-                // **Draw Header Image (Top)**
-                // page.drawImage(topImage, {
-                //     x: marginX,
-                //     y: pageHeight - marginY - topImage.height + 100,
-                //     width: 822 - (marginX * 2),
-                //     height: (822 / topImage.width) * topImage.height
-                // });
                 const topImageWidth = 785 - (marginX * 2);
                 const topImageHeight = (822 / topImage.width) * topImage.height;
                 page.drawImage(topImage, {
@@ -128,8 +119,8 @@ const Page = () => {
 
                 // **Draw Text in Remaining Space**
                 // **Set Bold Font & Large Font Size**
-                page.setFont(boldFont); // Ensure you have a bold font loaded
                 page.setFontSize(16); // Increase font size
+                page.setFont(boldFont);
 
                 // **Draw Bold & Large Text**
                 page.drawText(`${type}`, {
@@ -329,7 +320,6 @@ const Page = () => {
                     currentX = startX;
                     rowData.forEach((text, i) => {
                         if (true) {
-
                             if (text.length > 31 && i === 2) {
                                 let words = text.split(' ');
                                 let lines = [];
@@ -444,6 +434,7 @@ const Page = () => {
                 groupedData[centerCode].students.push({ isEmpty: true }); // Empty object with a flag
             }
         });
+
         for (const [centerCode, { name, location, examDate, students, type }] of Object.entries(groupedData)) {
             await createPDF(centerCode, name, location, examDate, students, type);
         }
