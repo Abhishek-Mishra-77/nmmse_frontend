@@ -69,7 +69,7 @@ const Page = () => {
         setMessage('⏳ Generating PDFs...');
         const zip = new JSZip();
 
-        const createPDF = async (centerCode, centerName, location, examDate, rows) => {
+        const createPDF = async (centerCode, centerName, location, examDate, rows, type) => {
             let pdfDoc = await PDFDocument.create();
             pdfDoc.registerFontkit(fontkit);
 
@@ -80,7 +80,7 @@ const Page = () => {
             const font = await pdfDoc.embedFont(fontBytes);
             const boldFont = await pdfDoc.embedFont(boldFontBytes);
 
-            const topImageBytes = await fetch('/12.jpg').then(res => res.arrayBuffer());
+            const topImageBytes = await fetch('/topbg.jpg').then(res => res.arrayBuffer());
             const bottomImageBytes = await fetch('/bottom1.jpg').then(res => res.arrayBuffer());
 
             const topImage = await pdfDoc.embedJpg(topImageBytes);
@@ -102,12 +102,51 @@ const Page = () => {
                 page.setFont(font);
                 page.setFontSize(9);
 
+
+                // const topImageWidth = 822 - (marginX * 2); // Calculate image width
+                // const topImageHeight = (topImageWidth / topImage.width) * topImage.height; 
+
                 // **Draw Header Image (Top)**
+                // page.drawImage(topImage, {
+                //     x: marginX,
+                //     y: pageHeight - marginY - topImage.height + 100,
+                //     width: 822 - (marginX * 2),
+                //     height: (822 / topImage.width) * topImage.height
+                // });
+                const topImageWidth = 785 - (marginX * 2);
+                const topImageHeight = (822 / topImage.width) * topImage.height;
                 page.drawImage(topImage, {
                     x: marginX,
                     y: pageHeight - marginY - topImage.height + 100,
-                    width: 822 - (marginX * 2),
-                    height: (822 / topImage.width) * topImage.height
+                    width: topImageWidth,
+                    height: topImageHeight
+                });
+
+                // **Calculate Remaining Width**
+                const remainingWidth = pageWidth - (marginX + topImageWidth + 20); // Remaining space after the image
+                const textX = marginX + topImageWidth + (remainingWidth / 2); // Center text in the remaining space
+
+                // **Draw Text in Remaining Space**
+                // **Set Bold Font & Large Font Size**
+                page.setFont(boldFont); // Ensure you have a bold font loaded
+                page.setFontSize(16); // Increase font size
+
+                // **Draw Bold & Large Text**
+                page.drawText(`${type}`, {
+                    x: textX - 60,
+                    y: pageHeight - marginY - topImageHeight + 10, // Align vertically with the top image
+                    maxWidth: remainingWidth + 60, // Ensure text stays within the remaining space
+                    align: 'center' // Center-align text
+                });
+
+                // **Underline Text**
+                const textWidth = type.length * 7; // Approximate width per character
+                const underlineY = pageHeight - marginY - topImageHeight + 58; // Slightly below text
+
+                page.drawLine({
+                    start: { x: textX - 60, y: underlineY - 50 },
+                    end: { x: textX - 60 + textWidth, y: underlineY - 50 },
+                    thickness: 1
                 });
 
                 // **Header Text Details (Using Bold Font)**
@@ -335,62 +374,6 @@ const Page = () => {
                                 });
                                 currentX += columnWidths[i];
                             }
-                            // page.drawText(text, { x: currentX + 5, y: yPosition });
-                            // page.drawRectangle({
-                            //     x: currentX,
-                            //     y: yPosition - Math.sqrt(rowHeight),
-                            //     width: columnWidths[i],
-                            //     height: rowHeight,
-                            //     borderColor: rgb(0, 0, 0),
-                            //     borderWidth: 0.5
-                            // });
-                            // currentX += columnWidths[i];
-                            // } else {
-                            // if (text.length > 35 && i === 2) {
-                            //     let words = text.split(' ');
-                            //     let lines = [];
-                            //     let currentLine = '';
-
-                            //     for (let word of words) {
-                            //         if ((currentLine + ' ' + word).trim().length <= 35) {
-                            //             currentLine += (currentLine ? ' ' : '') + word;
-                            //         } else {
-                            //             lines.push(currentLine);
-                            //             currentLine = word;
-                            //         }
-                            //     }
-                            //     if (currentLine) {
-                            //         lines.push(currentLine);
-                            //     }
-
-                            //     for (let j = 0; j < lines.length; j++) {
-                            //         page.drawText(lines[j], { x: currentX + 5, y: yPosition - (j * 12) });
-                            //     }
-
-                            //     page.drawRectangle({
-                            //         x: currentX,
-                            //         y: yPosition - Math.sqrt(rowHeight),
-                            //         width: columnWidths[i],
-                            //         height: rowHeight,
-                            //         borderColor: rgb(0, 0, 0),
-                            //         borderWidth: 0.5
-                            //     });
-
-                            //     currentX += columnWidths[i];
-                            // }
-                            // else {
-                            // page.drawText(text, { x: currentX + 5, y: yPosition });
-                            // page.drawRectangle({
-                            //     x: currentX,
-                            //     y: yPosition - Math.sqrt(rowHeight),
-                            //     width: columnWidths[i],
-                            //     height: rowHeight,
-                            //     borderColor: rgb(0, 0, 0),
-                            //     borderWidth: 0.5
-                            // });
-                            // currentX += columnWidths[i];
-                            // }
-
                         }
 
                     });
@@ -439,12 +422,6 @@ const Page = () => {
             });
 
             // **Save PDF and Add to ZIP**
-
-
-            // dstnm	center	TYPE	cennm	rollno	student
-
-
-
             const pdfBytes = await pdfDoc.save();
             zip.file(`${centerCode}.pdf`, pdfBytes);
         };
@@ -454,8 +431,8 @@ const Page = () => {
             const centerName = row['cennm'];
             const location = row['dstnm'] || '';
             const examDate = row['EXAM DATE'] || '';
-
-            if (!acc[centerCode]) acc[centerCode] = { name: centerName, location, examDate, students: [] };
+            const type = row['TYPE'];
+            if (!acc[centerCode]) acc[centerCode] = { name: centerName, location, examDate, type, students: [] };
             acc[centerCode].students.push(row);
             return acc;
         }, {});
@@ -467,8 +444,8 @@ const Page = () => {
                 groupedData[centerCode].students.push({ isEmpty: true }); // Empty object with a flag
             }
         });
-        for (const [centerCode, { name, location, examDate, students }] of Object.entries(groupedData)) {
-            await createPDF(centerCode, name, location, examDate, students);
+        for (const [centerCode, { name, location, examDate, students, type }] of Object.entries(groupedData)) {
+            await createPDF(centerCode, name, location, examDate, students, type);
         }
 
         const zipBlob = await zip.generateAsync({ type: 'blob' });
