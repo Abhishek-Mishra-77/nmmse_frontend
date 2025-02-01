@@ -148,8 +148,8 @@ const Page = () => {
                 page.setFont(boldFont);
                 page.setFontSize(9);
                 page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height + 80 });
-                page.drawText(`${location}`, { x: 400, y: pageHeight - topImage.height + 80 });
-                page.drawText(`EXAM DATE  ${examDate || '..................'}`, { x: 650, y: pageHeight - topImage.height + 80 });
+                page.drawText(`${location}`, { x: 440, y: pageHeight - topImage.height + 80 });
+                page.drawText(`EXAM DATE  ${examDate || '.................................'}`, { x: 650, y: pageHeight - topImage.height + 80 });
 
                 // **Center Name**
                 page.drawText(`CENTER NAME       ${centerName}`, {
@@ -327,11 +327,10 @@ const Page = () => {
                             if (text.length > 28 && i === 2) {
                                 let words = text.split(' ');
                                 let lines = [];
-                                let newArr = [];
                                 let currentLine = '';
 
                                 for (let word of words) {
-                                    if ((currentLine + ' ' + word).trim().length <= 31) {
+                                    if ((currentLine + ' ' + word).trim().length <= 35) {
                                         currentLine += (currentLine ? ' ' : '') + word;
                                     } else {
                                         lines.push(currentLine);
@@ -341,29 +340,10 @@ const Page = () => {
                                 if (currentLine) {
                                     lines.push(currentLine);
                                 }
-
-                                let total = 0;
-                                let j;
-                                let newStr = ""
-                                for (let i = 0; i < words.length; i++) {
-                                    if (total >= 31) {
-                                        j = i;
-                                        break;
-                                    }
-                                    else {
-                                        newStr += words[i];
-                                        total += words[i].length;
-                                    }
-                                }
-
-
-                                let newData = words.slice(0, j).join(" ");
-                                let newData2 = words.slice(j).join(" ");
-                                newArr.push(newData)
-                                newArr.push(newData2);
                                 const tempY = yPosition + 22;
-                                for (let j = 0; j < newArr.length; j++) {
-                                    page.drawText(newArr[j], { x: currentX + 5, y: tempY - (j * 12) });
+                                for (let j = 0; j < lines.length; j++) {
+
+                                    page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
                                 }
 
                                 page.drawRectangle({
@@ -438,11 +418,10 @@ const Page = () => {
                             if (text.length > 28 && i === 2) {
                                 let words = text.split(' ');
                                 let lines = [];
-                                let newArr = [];
                                 let currentLine = '';
 
                                 for (let word of words) {
-                                    if ((currentLine + ' ' + word).trim().length <= 31) {
+                                    if ((currentLine + ' ' + word).trim().length <= 35) {
                                         currentLine += (currentLine ? ' ' : '') + word;
                                     } else {
                                         lines.push(currentLine);
@@ -452,27 +431,10 @@ const Page = () => {
                                 if (currentLine) {
                                     lines.push(currentLine);
                                 }
-
-                                let total = 0;
-                                let j;
-                                let newStr = ""
-                                for (let i = 0; i < words.length; i++) {
-                                    if (total >= 31) {
-                                        j = i;
-                                        break;
-                                    }
-                                    else {
-                                        newStr += words[i];
-                                        total += words[i].length;
-                                    }
-                                }
-                                let newData = words.slice(0, j).join(" ");
-                                let newData2 = words.slice(j).join(" ");
-                                newArr.push(newData)
-                                newArr.push(newData2);
                                 const tempY = yPosition + 22;
-                                for (let j = 0; j < newArr.length; j++) {
-                                    page.drawText(newArr[j], { x: currentX + 5, y: tempY - (j * 12) });
+                                for (let j = 0; j < lines.length; j++) {
+
+                                    page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
                                 }
 
                                 page.drawRectangle({
@@ -505,11 +467,6 @@ const Page = () => {
             });
 
             // **Save PDF and Add to ZIP**
-
-
-            // dstnm	center	TYPE	cennm	rollno	student
-
-
 
             const pdfBytes = await pdfDoc.save();
             zip.file(`${centerCode}.pdf`, pdfBytes);
