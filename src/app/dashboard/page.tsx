@@ -68,7 +68,6 @@ const Page = () => {
     const generatePDFs = async (data) => {
         setMessage('⏳ Generating PDFs...');
         const zip = new JSZip();
-
         const createPDF = async (centerCode, centerName, location, examDate, rows, type) => {
             let pdfDoc = await PDFDocument.create();
             pdfDoc.registerFontkit(fontkit);
@@ -325,14 +324,14 @@ const Page = () => {
                     currentX = startX;
                     rowData.forEach((text, i) => {
                         if (true) {
-
-                            if (text.length > 31 && i === 2) {
+                            if (text.length > 28 && i === 2) {
                                 let words = text.split(' ');
                                 let lines = [];
+                                let newArr = [];
                                 let currentLine = '';
 
                                 for (let word of words) {
-                                    if ((currentLine + ' ' + word).trim().length <= 35) {
+                                    if ((currentLine + ' ' + word).trim().length <= 31) {
                                         currentLine += (currentLine ? ' ' : '') + word;
                                     } else {
                                         lines.push(currentLine);
@@ -342,10 +341,29 @@ const Page = () => {
                                 if (currentLine) {
                                     lines.push(currentLine);
                                 }
-                                const tempY = yPosition + 22;
-                                for (let j = 0; j < lines.length; j++) {
 
-                                    page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
+                                let total = 0;
+                                let j;
+                                let newStr = ""
+                                for (let i = 0; i < words.length; i++) {
+                                    if (total >= 31) {
+                                        j = i;
+                                        break;
+                                    }
+                                    else {
+                                        newStr += words[i];
+                                        total += words[i].length;
+                                    }
+                                }
+
+
+                                let newData = words.slice(0, j).join(" ");
+                                let newData2 = words.slice(j).join(" ");
+                                newArr.push(newData)
+                                newArr.push(newData2);
+                                const tempY = yPosition + 22;
+                                for (let j = 0; j < newArr.length; j++) {
+                                    page.drawText(newArr[j], { x: currentX + 5, y: tempY - (j * 12) });
                                 }
 
                                 page.drawRectangle({
@@ -359,7 +377,7 @@ const Page = () => {
 
                                 currentX += columnWidths[i];
                             } else {
-                                page.drawText(text, { x: currentX + 5, y: yPosition });
+                                page.drawText(text, { x: currentX + 5, y: yPosition + 10 });
                                 page.drawRectangle({
                                     x: currentX,
                                     y: yPosition - Math.sqrt(rowHeight),
@@ -376,6 +394,7 @@ const Page = () => {
 
                     yPosition -= rowHeight;
                 } else {
+
                     if (yPosition < bottomImage.height - 50) {
                         page = createPage();
                         yPosition = pageHeight - topImage.height + 40;
@@ -400,19 +419,87 @@ const Page = () => {
                     page.setFont(font);
                     page.setFontSize(9);
                     currentX = startX;
-                    rowData.forEach((text, i) => {
-                        page.drawText(text, { x: currentX + 5, y: yPosition });
-                        page.drawRectangle({
-                            x: currentX,
-                            y: yPosition - Math.sqrt(rowHeight),
-                            width: columnWidths[i],
-                            height: rowHeight,
-                            borderColor: rgb(0, 0, 0),
-                            borderWidth: 0.5
-                        });
-                        currentX += columnWidths[i];
-                    });
+                    // rowData.forEach((text, i) => {
 
+
+                    //     page.drawText(text, { x: currentX + 5, y: yPosition });
+                    //     page.drawRectangle({
+                    //         x: currentX,
+                    //         y: yPosition - Math.sqrt(rowHeight),
+                    //         width: columnWidths[i],
+                    //         height: rowHeight,
+                    //         borderColor: rgb(0, 0, 0),
+                    //         borderWidth: 0.5
+                    //     });
+                    //     currentX += columnWidths[i];
+                    // });
+                    rowData.forEach((text, i) => {
+                        if (true) {
+                            if (text.length > 28 && i === 2) {
+                                let words = text.split(' ');
+                                let lines = [];
+                                let newArr = [];
+                                let currentLine = '';
+
+                                for (let word of words) {
+                                    if ((currentLine + ' ' + word).trim().length <= 31) {
+                                        currentLine += (currentLine ? ' ' : '') + word;
+                                    } else {
+                                        lines.push(currentLine);
+                                        currentLine = word;
+                                    }
+                                }
+                                if (currentLine) {
+                                    lines.push(currentLine);
+                                }
+
+                                let total = 0;
+                                let j;
+                                let newStr = ""
+                                for (let i = 0; i < words.length; i++) {
+                                    if (total >= 31) {
+                                        j = i;
+                                        break;
+                                    }
+                                    else {
+                                        newStr += words[i];
+                                        total += words[i].length;
+                                    }
+                                }
+                                let newData = words.slice(0, j).join(" ");
+                                let newData2 = words.slice(j).join(" ");
+                                newArr.push(newData)
+                                newArr.push(newData2);
+                                const tempY = yPosition + 22;
+                                for (let j = 0; j < newArr.length; j++) {
+                                    page.drawText(newArr[j], { x: currentX + 5, y: tempY - (j * 12) });
+                                }
+
+                                page.drawRectangle({
+                                    x: currentX,
+                                    y: yPosition - Math.sqrt(rowHeight),
+                                    width: columnWidths[i],
+                                    height: rowHeight,
+                                    borderColor: rgb(0, 0, 0),
+                                    borderWidth: 0.5
+                                });
+
+                                currentX += columnWidths[i];
+                            } else {
+                                page.drawText(text, { x: currentX + 5, y: yPosition + 10 });
+                                page.drawRectangle({
+                                    x: currentX,
+                                    y: yPosition - Math.sqrt(rowHeight),
+                                    width: columnWidths[i],
+                                    height: rowHeight,
+                                    borderColor: rgb(0, 0, 0),
+                                    borderWidth: 0.5
+                                });
+                                currentX += columnWidths[i];
+                            }
+                        }
+
+                    });
                     yPosition -= rowHeight;
                 }
             });
