@@ -268,7 +268,7 @@ const Page = () => {
                 if (index === 0) {
                     if (yPosition < bottomImage.height - 150) {
                         page = createPage();
-                        yPosition = pageHeight - topImage.height ;
+                        yPosition = pageHeight - topImage.height;
                         page.setFont(boldFont);
                         page.setFontSize(10);
                         currentX = startX;
