@@ -11,7 +11,7 @@ const Page = () => {
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
-
+    // PAPER-1 (10:00 AM-11:30 AM)
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             setFile(event.target.files[0]);
@@ -168,7 +168,6 @@ const Page = () => {
                     width: bottomImageWidth,
                     height: bottomImageHeight
                 });
-
                 return page;
             };
 
@@ -179,16 +178,16 @@ const Page = () => {
                 page.setFont(boldFont);
                 page.setFontSize(10);
                 const headers =
-                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER - I (01:00 PM 02:30 PM)', '', 'PAPER - II (01:00 PM 02:30 PM)', ''];
+                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-1 (10:00 AM-11:30 AM)', '', 'PAPER-II (01:00 PM 02:30 PM)', ''];
                 const subHeaders =
                     ['', '', '', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE'];
 
                 // **First Row of Headers**
                 headers.forEach((text, i) => {
-                    if (text === 'PAPER - I (01:00 PM 02:30 PM)' || text === 'PAPER - II (01:00 PM 02:30 PM)') {
+                    if (text === 'PAPER-1 (10:00 AM-11:30 AM)' || text === 'PAPER-II (01:00 PM 02:30 PM)') {
                         page.drawText(text, { x: currentX + 15, y: yPosition - 13 });
 
-                        if (text === "PAPER - I (01:00 PM 02:30 PM)") {
+                        if (text === "PAPER-1 (10:00 AM-11:30 AM)") {
                             // ✅ Draw only Top, Left, Bottom (Hide Right Border)
                             page.drawLine({
                                 start: { x: currentX, y: yPosition }, // Top-left
