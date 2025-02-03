@@ -95,14 +95,14 @@ const Page = () => {
             const fallbackImage = await pdfDoc.embedJpg(fallbackBytes);
 
 
-            const pageWidth = 842;  // A4 height becomes width
+            const pageWidth = 860;  // A4 height becomes width
             const pageHeight = 695;
             const marginX = 10;
-            const marginY = 0;
+            const marginY = 5;
 
             const rowHeight = 37;
             const headerHeight = 40;
-            const columnWidths = [35, 90, 260, 80, 130, 80, 130];
+            const columnWidths = [35, 90, 260, 80, 140, 80, 140];
             const startX = marginX + 10;
             let currentX = startX;
 
@@ -244,7 +244,7 @@ const Page = () => {
                             borderWidth: 0.5
                         });
                     } else if (text !== '') {
-                        page.drawText(text, { x: currentX + 15, y: yPosition - 25 });
+                        page.drawText(text, { x: currentX + 10, y: yPosition - 25 });
                         page.drawRectangle({
                             x: currentX,
                             y: yPosition - headerHeight,
@@ -324,7 +324,7 @@ const Page = () => {
                     currentX = startX;
                     rowData.forEach((text, i) => {
                         if (true) {
-                            if (text.length > 28 && i === 2) {
+                            if (text.length > 35 && i === 2) {
                                 let words = text.split(' ');
                                 let lines = [];
                                 let currentLine = '';
@@ -343,7 +343,7 @@ const Page = () => {
                                 const tempY = yPosition + 22;
                                 for (let j = 0; j < lines.length; j++) {
 
-                                    page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
+                                    page.drawText(lines[j], { x: currentX + 10, y: tempY - (j * 12) });
                                 }
 
                                 page.drawRectangle({
@@ -357,7 +357,7 @@ const Page = () => {
 
                                 currentX += columnWidths[i];
                             } else {
-                                page.drawText(text, { x: currentX + 5, y: yPosition + 10 });
+                                page.drawText(text, { x: currentX + 10, y: yPosition + 10 });
                                 page.drawRectangle({
                                     x: currentX,
                                     y: yPosition - Math.sqrt(rowHeight),
@@ -401,7 +401,7 @@ const Page = () => {
                     currentX = startX;
                     rowData.forEach((text, i) => {
                         if (true) {
-                            if (text.length > 28 && i === 2) {
+                            if (text.length > 35 && i === 2) {
                                 let words = text.split(' ');
                                 let lines = [];
                                 let currentLine = '';
@@ -420,7 +420,7 @@ const Page = () => {
                                 const tempY = yPosition + 22;
                                 for (let j = 0; j < lines.length; j++) {
 
-                                    page.drawText(lines[j], { x: currentX + 5, y: tempY - (j * 12) });
+                                    page.drawText(lines[j], { x: currentX + 10, y: tempY - (j * 12) });
                                 }
 
                                 page.drawRectangle({
@@ -434,7 +434,7 @@ const Page = () => {
 
                                 currentX += columnWidths[i];
                             } else {
-                                page.drawText(text, { x: currentX + 5, y: yPosition + 10 });
+                                page.drawText(text, { x: currentX + 10, y: yPosition + 10 });
                                 page.drawRectangle({
                                     x: currentX,
                                     y: yPosition - Math.sqrt(rowHeight),
