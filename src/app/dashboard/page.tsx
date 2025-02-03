@@ -135,13 +135,13 @@ const Page = () => {
                         : uppImage
                     : fallbackImage;
 
- 
+
                 // **Draw Bold & Large Text**
                 page.drawImage(selectedImage, {
                     x: textX - 60,
                     y: pageHeight - marginY - topImageHeight + 10, // Align vertically with the top image
                     width: remainingWidth + 25, // Ensure text stays within the remaining space
-                    height: remainingWidth-10 
+                    height: remainingWidth - 10
                 });
 
                 // **Header Text Details (Using Bold Font)**
@@ -399,20 +399,6 @@ const Page = () => {
                     page.setFont(font);
                     page.setFontSize(9);
                     currentX = startX;
-                    // rowData.forEach((text, i) => {
-
-
-                    //     page.drawText(text, { x: currentX + 5, y: yPosition });
-                    //     page.drawRectangle({
-                    //         x: currentX,
-                    //         y: yPosition - Math.sqrt(rowHeight),
-                    //         width: columnWidths[i],
-                    //         height: rowHeight,
-                    //         borderColor: rgb(0, 0, 0),
-                    //         borderWidth: 0.5
-                    //     });
-                    //     currentX += columnWidths[i];
-                    // });
                     rowData.forEach((text, i) => {
                         if (true) {
                             if (text.length > 28 && i === 2) {
