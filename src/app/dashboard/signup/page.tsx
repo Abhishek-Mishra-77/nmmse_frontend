@@ -11,7 +11,7 @@ const Page = () => {
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
-    // PAPER-1 (10:00 AM-11:30 AM)
+    
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             setFile(event.target.files[0]);
@@ -146,7 +146,7 @@ const Page = () => {
 
                 // **Header Text Details (Using Bold Font)**
                 page.setFont(boldFont);
-                page.setFontSize(9);
+                page.setFontSize(11);
                 page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height + 80 });
                 page.drawText(`${location}`, { x: 440, y: pageHeight - topImage.height + 80 });
                 page.drawText(`EXAM DATE  ${examDate || '.................................'}`, { x: 650, y: pageHeight - topImage.height + 80 });
@@ -178,16 +178,16 @@ const Page = () => {
                 page.setFont(boldFont);
                 page.setFontSize(10);
                 const headers =
-                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-1 (10:00 AM-11:30 AM)', '', 'PAPER-II (01:00 PM 02:30 PM)', ''];
+                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I (10:00 AM-11:30 AM)', '', 'PAPER-II (01:00 PM 02:30 PM)', ''];
                 const subHeaders =
                     ['', '', '', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE'];
 
                 // **First Row of Headers**
                 headers.forEach((text, i) => {
-                    if (text === 'PAPER-1 (10:00 AM-11:30 AM)' || text === 'PAPER-II (01:00 PM 02:30 PM)') {
+                    if (text === 'PAPER-I (10:00 AM-11:30 AM)' || text === 'PAPER-II (01:00 PM 02:30 PM)') {
                         page.drawText(text, { x: currentX + 15, y: yPosition - 13 });
 
-                        if (text === "PAPER-1 (10:00 AM-11:30 AM)") {
+                        if (text === "PAPER-I (10:00 AM-11:30 AM)") {
                             // ✅ Draw only Top, Left, Bottom (Hide Right Border)
                             page.drawLine({
                                 start: { x: currentX, y: yPosition }, // Top-left
@@ -283,12 +283,12 @@ const Page = () => {
 
             // **Table Data**
             page.setFont(font);
-            page.setFontSize(9);
+            page.setFontSize(11);
             drawTableHeader();
             let extraRow = ['', '', '', '', '', '', ''];
             currentX = startX;
             page.setFont(font);
-            page.setFontSize(9);
+            page.setFontSize(11);
 
             extraRow.forEach((text, i) => {
                 page.drawText(text, { x: currentX + 5, y: yPosition });
@@ -304,7 +304,7 @@ const Page = () => {
                         page = createPage();
                         yPosition = pageHeight - topImage.height;
                         page.setFont(boldFont);
-                        page.setFontSize(10);
+                        page.setFontSize(11);
                         currentX = startX;
                         yPosition -= rowHeight;
                     }
@@ -320,7 +320,7 @@ const Page = () => {
                     ];
 
                     page.setFont(font);
-                    page.setFontSize(9);
+                    page.setFontSize(11);
                     currentX = startX;
                     rowData.forEach((text, i) => {
                         if (true) {
@@ -379,7 +379,7 @@ const Page = () => {
                         yPosition = pageHeight - topImage.height + 40;
                         // **Redraw Table Headers**
                         page.setFont(boldFont);
-                        page.setFontSize(10);
+                        page.setFontSize(11);
                         currentX = startX;
                         drawTableHeader();
                         yPosition -= rowHeight - 5;
@@ -395,7 +395,7 @@ const Page = () => {
                         ''
                     ];
                     page.setFont(font);
-                    page.setFontSize(9);
+                    page.setFontSize(11);
                     currentX = startX;
                     rowData.forEach((text, i) => {
                         if (true) {
@@ -486,7 +486,7 @@ const Page = () => {
 
                 // **Header Text**
                 page.setFont(boldFont);
-                page.setFontSize(9);
+                page.setFontSize(11);
                 page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height + 80 });
                 page.drawText(`${location}`, { x: 440, y: pageHeight - topImage.height + 80 });
                 page.drawText(`EXAM DATE  ${examDate || '.................................'}`, { x: 650, y: pageHeight - topImage.height + 80 });
@@ -522,16 +522,16 @@ const Page = () => {
                 page2.setFont(boldFont);
                 page2.setFontSize(10);
                 const headers =
-                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-1 (10:00 AM-11:30 AM)', '', 'PAPER-II (01:00 PM 02:30 PM)', ''];
+                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-I (10:00 AM-11:30 AM)', '', 'PAPER-II (01:00 PM 02:30 PM)', ''];
                 const subHeaders =
                     ['', '', '', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE'];
 
                 // **First Row of Headers**
                 headers.forEach((text, i) => {
-                    if (text === 'PAPER-1 (10:00 AM-11:30 AM)' || text === 'PAPER-II (01:00 PM 02:30 PM)') {
+                    if (text === 'PAPER-I (10:00 AM-11:30 AM)' || text === 'PAPER-II (01:00 PM 02:30 PM)') {
                         page2.drawText(text, { x: currentX + 15, y: yPosition2 - 13 });
 
-                        if (text === "PAPER-1 (10:00 AM-11:30 AM)") {
+                        if (text === "PAPER-I (10:00 AM-11:30 AM)") {
                             // ✅ Draw only Top, Left, Bottom (Hide Right Border)
                             page2.drawLine({
                                 start: { x: currentX, y: yPosition2 }, // Top-left
@@ -628,7 +628,7 @@ const Page = () => {
             let extraRow2 = ['', '', '', '', '', '', ''];
             currentX = startX;
             page2.setFont(font);
-            page2.setFontSize(9);
+            page2.setFontSize(11);
             let yPosition2 = pageHeight - topImage.height + 40;
             drawTableHeader2();
             extraRow2.forEach((text, i) => {
@@ -736,7 +736,7 @@ const Page = () => {
                     ''
                 ];
                 page2.setFont(font);
-                page2.setFontSize(9);
+                page2.setFontSize(11);
                 currentX = startX;
                 rowData.forEach((text, i) => {
                     if (true) {
