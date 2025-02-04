@@ -475,6 +475,7 @@ const Page = () => {
                 groupedData[centerCode].students.push({ isEmpty: true }); // Empty object with a flag
             }
         });
+
         for (const [centerCode, { name, location, examDate, students, type }] of Object.entries(groupedData)) {
             await createPDF(centerCode, name, location, examDate, students, type);
         }
