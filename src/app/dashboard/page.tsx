@@ -105,7 +105,7 @@ const Page = () => {
             const columnWidths = [35, 90, 260, 80, 140, 80, 140];
             const startX = marginX + 10;
             let currentX = startX;
-
+            let lastSlNo = 1;
             const createPage = () => {
                 let page = pdfDoc.addPage([pageWidth, pageHeight]);
                 page.setFont(font);
@@ -297,6 +297,7 @@ const Page = () => {
 
             // ✅ Adjust `yPosition` after adding the extra row
             yPosition -= rowHeight - 5;
+
             rows.forEach((row, index) => {
                 if (index === 0) {
                     if (yPosition < bottomImage.height - 150) {
@@ -373,7 +374,6 @@ const Page = () => {
 
                     yPosition -= rowHeight;
                 } else {
-
                     if (yPosition < bottomImage.height - 50) {
                         page = createPage();
                         yPosition = pageHeight - topImage.height + 40;
@@ -394,7 +394,6 @@ const Page = () => {
                         '',
                         ''
                     ];
-
                     page.setFont(font);
                     page.setFontSize(9);
                     currentX = startX;
@@ -449,10 +448,350 @@ const Page = () => {
                     });
                     yPosition -= rowHeight;
                 }
+                lastSlNo = index + 1;
             });
+            const createExtraPage = () => {
+                let page = pdfDoc.addPage([pageWidth, pageHeight]); // Use createPage() instead of addPage()
+                page.setFont(font);
+                page.setFontSize(9);
+
+                // **Top Image**
+                const topImageWidth = 785 - (marginX * 2);
+                const topImageHeight = (822 / topImage.width) * topImage.height;
+                page.drawImage(topImage, {
+                    x: marginX,
+                    y: pageHeight - marginY - topImage.height + 100,
+                    width: topImageWidth,
+                    height: topImageHeight
+                });
+
+                // **Remaining Space for Text**
+                const remainingWidth = pageWidth - (marginX + topImageWidth + 20);
+                const textX = marginX + topImageWidth + (remainingWidth / 2);
+
+                // **Select Header Image Based on Type**
+                const selectedImage = type
+                    ? type === 'मुख्य केंद्र'
+                        ? mainImage
+                        : uppImage
+                    : fallbackImage;
+
+                // **Draw Header Image**
+                page.drawImage(selectedImage, {
+                    x: textX - 60,
+                    y: pageHeight - marginY - topImageHeight + 10,
+                    width: remainingWidth + 25,
+                    height: remainingWidth - 10
+                });
+
+                // **Header Text**
+                page.setFont(boldFont);
+                page.setFontSize(9);
+                page.drawText(`CENTER CODE        ${centerCode}`, { x: marginX + 15, y: pageHeight - topImage.height + 80 });
+                page.drawText(`${location}`, { x: 440, y: pageHeight - topImage.height + 80 });
+                page.drawText(`EXAM DATE  ${examDate || '.................................'}`, { x: 650, y: pageHeight - topImage.height + 80 });
+
+                // **Center Name**
+                page.drawText(`CENTER NAME       ${centerName}`, {
+                    x: marginX + 15,
+                    y: pageHeight - topImage.height + 60
+                });
+
+                // **Footer Image (Bottom)**
+                const bottomImageWidth = 822 - (marginX * 2);
+                const bottomImageHeight = (bottomImageWidth / bottomImage.width) * bottomImage.height;
+                const bottomImageX = (pageWidth - bottomImageWidth) / 2;
+
+                page.drawImage(bottomImage, {
+                    x: bottomImageX,
+                    y: marginY,
+                    width: bottomImageWidth,
+                    height: bottomImageHeight
+                });
+
+                return page;
+            };
+
 
             // **Save PDF and Add to ZIP**
+            // Add an empty page to the document
+            let page2 = createExtraPage();
 
+            const drawTableHeader2 = () => {
+                // **Table Headers (Using Multi-Row Headers)**
+                page2.setFont(boldFont);
+                page2.setFontSize(10);
+                const headers =
+                    ['NO.', 'ROLL NUMBER', 'STUDENT NAME / FATHER\'S NAME', 'PAPER-1 (10:00 AM-11:30 AM)', '', 'PAPER-II (01:00 PM 02:30 PM)', ''];
+                const subHeaders =
+                    ['', '', '', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE', 'OMR SHEET No.', 'SIGNATURE OF CANDIDATE'];
+
+                // **First Row of Headers**
+                headers.forEach((text, i) => {
+                    if (text === 'PAPER-1 (10:00 AM-11:30 AM)' || text === 'PAPER-II (01:00 PM 02:30 PM)') {
+                        page2.drawText(text, { x: currentX + 15, y: yPosition2 - 13 });
+
+                        if (text === "PAPER-1 (10:00 AM-11:30 AM)") {
+                            // ✅ Draw only Top, Left, Bottom (Hide Right Border)
+                            page2.drawLine({
+                                start: { x: currentX, y: yPosition2 }, // Top-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition2 }, // Top-right
+                                thickness: 0.5,
+                                color: rgb(0, 0, 0)
+                            });
+
+                            page2.drawLine({
+                                start: { x: currentX, y: yPosition2 }, // Top-left
+                                end: { x: currentX, y: yPosition2 - headerHeight }, // Bottom-left
+                                thickness: 0.5,
+                                color: rgb(0, 0, 0)
+                            });
+
+                            page2.drawLine({
+                                start: { x: currentX, y: yPosition2 - headerHeight }, // Bottom-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition2 - headerHeight }, // Bottom-right
+                                thickness: 0.5,
+                                color: rgb(0, 0, 0)
+                            });
+
+                        } else {
+                            // ✅ Draw only Top, Right, Bottom (Hide Left Border)
+                            page2.drawLine({
+                                start: { x: currentX, y: yPosition2 }, // Top-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition2 }, // Top-right
+                                thickness: 0.5,
+                                color: rgb(0, 0, 0)
+                            });
+
+                            page2.drawLine({
+                                start: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition2 }, // Top-right
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition2 - headerHeight }, // Bottom-right
+                                thickness: 0.5,
+                                color: rgb(0, 0, 0)
+                            });
+
+                            page2.drawLine({
+                                start: { x: currentX, y: yPosition2 - headerHeight }, // Bottom-left
+                                end: { x: currentX + columnWidths[i] + columnWidths[i + 1], y: yPosition2 - headerHeight }, // Bottom-right
+                                thickness: 0.5,
+                                color: rgb(0, 0, 0)
+                            });
+                        }
+
+                        page2.drawRectangle({
+                            x: currentX,
+                            y: yPosition2 - headerHeight,
+                            width: columnWidths[i] + columnWidths[i + 1], // Merge 2 columns
+                            height: headerHeight,
+                            borderColor: rgb(0, 0, 0),
+                            borderWidth: 0.5
+                        });
+                    } else if (text !== '') {
+                        page2.drawText(text, { x: currentX + 10, y: yPosition2 - 25 });
+                        page2.drawRectangle({
+                            x: currentX,
+                            y: yPosition2 - headerHeight,
+                            width: columnWidths[i],
+                            height: headerHeight,
+                            borderColor: rgb(0, 0, 0),
+                            borderWidth: 0.5
+                        });
+                    }
+                    currentX += columnWidths[i];
+                });
+
+                yPosition2 -= headerHeight / 2;
+
+                // **Second Row of Headers**
+                currentX = startX;
+                subHeaders.forEach((text, i) => {
+                    if (text !== '') {
+                        page2.setFontSize(8);
+                        page2.drawText(text, { x: currentX + 5, y: yPosition2 - 12 });
+
+                        page2.drawRectangle({
+                            x: currentX,
+                            y: yPosition2 - headerHeight / 2,
+                            width: columnWidths[i],
+                            height: headerHeight / 2,
+                            borderColor: rgb(0, 0, 0),
+                            borderWidth: 0.5
+                        });
+                    }
+                    currentX += columnWidths[i];
+                });
+
+                yPosition2 -= headerHeight / 2;
+            };
+
+
+            let extraRow2 = ['', '', '', '', '', '', ''];
+            currentX = startX;
+            page2.setFont(font);
+            page2.setFontSize(9);
+            let yPosition2 = pageHeight - topImage.height + 40;
+            drawTableHeader2();
+            extraRow2.forEach((text, i) => {
+                page2.drawText(text, { x: currentX + 5, y: yPosition });
+                currentX += columnWidths[i];
+            });
+            yPosition2 -= rowHeight - 5;
+
+            let lastRow = new Array(10).fill('');
+            lastSlNo += 1;
+            lastRow.forEach((row, index) => {
+                // if (index === 0) {
+                //     if (yPosition2 < bottomImage.height - 150) {
+                //         page2 = createPage();
+                //         yPosition2 = pageHeight - topImage.height;
+                //         page2.setFont(boldFont);
+                //         page2.setFontSize(10);
+                //         currentX = startX;
+                //         yPosition2 -= rowHeight;
+                //     }
+
+                //     let rowData = [
+                //         (lastSlNo).toString(),
+                //         row['rollno']?.toString() || '',
+                //         row["student"]?.toString() || '',
+                //         '',
+                //         '',
+                //         '',
+                //         ''
+                //     ];
+
+                //     page2.setFont(font);
+                //     page2.setFontSize(9);
+                //     currentX = startX;
+                //     rowData.forEach((text, i) => {
+                //         if (true) {
+                //             if (text.length > 35 && i === 2) {
+                //                 let words = text.split(' ');
+                //                 let lines = [];
+                //                 let currentLine = '';
+
+                //                 for (let word of words) {
+                //                     if ((currentLine + ' ' + word).trim().length <= 35) {
+                //                         currentLine += (currentLine ? ' ' : '') + word;
+                //                     } else {
+                //                         lines.push(currentLine);
+                //                         currentLine = word;
+                //                     }
+                //                 }
+                //                 if (currentLine) {
+                //                     lines.push(currentLine);
+                //                 }
+                //                 const tempY = yPosition2 + 22;
+                //                 for (let j = 0; j < lines.length; j++) {
+
+                //                     page2.drawText(lines[j], { x: currentX + 10, y: tempY - (j * 12) });
+                //                 }
+
+                //                 page2.drawRectangle({
+                //                     x: currentX,
+                //                     y: yPosition2 - Math.sqrt(rowHeight),
+                //                     width: columnWidths[i],
+                //                     height: rowHeight,
+                //                     borderColor: rgb(0, 0, 0),
+                //                     borderWidth: 0.5
+                //                 });
+
+                //                 currentX += columnWidths[i];
+                //             } else {
+                //                 page2.drawText(text, { x: currentX + 10, y: yPosition + 10 });
+                //                 page2.drawRectangle({
+                //                     x: currentX,
+                //                     y: yPosition2 - Math.sqrt(rowHeight),
+                //                     width: columnWidths[i],
+                //                     height: rowHeight,
+                //                     borderColor: rgb(0, 0, 0),
+                //                     borderWidth: 0.5
+                //                 });
+                //                 currentX += columnWidths[i];
+                //             }
+                //         }
+
+                //     });
+
+                //     yPosition2 -= rowHeight;
+                // } else {
+                // if (yPosition2 < bottomImage.height - 50) {
+                //     page = createPage();
+                //     yPosition2 = pageHeight - topImage.height + 40;
+                //     // **Redraw Table Headers**
+                //     page.setFont(boldFont);
+                //     page.setFontSize(10);
+                //     currentX = startX;
+                //     drawTableHeader();
+                //     yPosition2 -= rowHeight - 5;
+                // }
+
+                let rowData = [
+                    (lastSlNo).toString(),
+                    row['rollno']?.toString() || '',
+                    row["student"]?.toString() || '',
+                    '',
+                    '',
+                    '',
+                    ''
+                ];
+                page2.setFont(font);
+                page2.setFontSize(9);
+                currentX = startX;
+                rowData.forEach((text, i) => {
+                    if (true) {
+                        if (text.length > 35 && i === 2) {
+                            let words = text.split(' ');
+                            let lines = [];
+                            let currentLine = '';
+
+                            for (let word of words) {
+                                if ((currentLine + ' ' + word).trim().length <= 35) {
+                                    currentLine += (currentLine ? ' ' : '') + word;
+                                } else {
+                                    lines.push(currentLine);
+                                    currentLine = word;
+                                }
+                            }
+                            if (currentLine) {
+                                lines.push(currentLine);
+                            }
+                            const tempY = yPosition2 + 22;
+                            for (let j = 0; j < lines.length; j++) {
+
+                                page2.drawText(lines[j], { x: currentX + 10, y: tempY - (j * 12) });
+                            }
+
+                            page2.drawRectangle({
+                                x: currentX,
+                                y: yPosition2 - Math.sqrt(rowHeight),
+                                width: columnWidths[i],
+                                height: rowHeight,
+                                borderColor: rgb(0, 0, 0),
+                                borderWidth: 0.5
+                            });
+
+                            currentX += columnWidths[i];
+                        } else {
+                            page2.drawText(text, { x: currentX + 10, y: yPosition2 + 10 });
+                            page2.drawRectangle({
+                                x: currentX,
+                                y: yPosition2 - Math.sqrt(rowHeight),
+                                width: columnWidths[i],
+                                height: rowHeight,
+                                borderColor: rgb(0, 0, 0),
+                                borderWidth: 0.5
+                            });
+                            currentX += columnWidths[i];
+                        }
+                    }
+
+                });
+                yPosition2 -= rowHeight;
+                // }
+                lastSlNo = lastSlNo + 1;
+            });
+            // pdfDoc.addPage(lastPage);
             const pdfBytes = await pdfDoc.save();
             zip.file(`${centerCode}.pdf`, pdfBytes);
         };
@@ -468,17 +807,17 @@ const Page = () => {
             return acc;
         }, {});
 
-
         // Add 10 empty data objects for each group
-        Object.keys(groupedData).forEach(centerCode => {
-            for (let i = 0; i < 10; i++) {
-                groupedData[centerCode].students.push({ isEmpty: true }); // Empty object with a flag
-            }
-        });
+        // Object.keys(groupedData).forEach(centerCode => {
+        //     for (let i = 0; i < 10; i++) {
+        //         groupedData[centerCode].students.push({ isEmpty: true }); // Empty object with a flag
+        //     }
+        // });
 
         for (const [centerCode, { name, location, examDate, students, type }] of Object.entries(groupedData)) {
             await createPDF(centerCode, name, location, examDate, students, type);
         }
+
 
         const zipBlob = await zip.generateAsync({ type: 'blob' });
         const url = window.URL.createObjectURL(zipBlob);
