@@ -11,7 +11,7 @@ const Page = () => {
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
-   
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             setFile(event.target.files[0]);
@@ -57,7 +57,6 @@ const Page = () => {
                     setLoading(false);
                 }
             };
-
             reader.readAsArrayBuffer(file);
         } catch (error) {
             setMessage(`❌ Unexpected error: ${error.message}`);
